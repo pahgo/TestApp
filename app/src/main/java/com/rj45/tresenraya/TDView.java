@@ -90,7 +90,7 @@ public class TDView extends SurfaceView implements
     }
 
     private void update() {
-
+        boolean addEnemy = false;
         for(final EnemyShip enemy:enemies) {
             if(Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
                 enemy.setX(-200);
@@ -107,8 +107,15 @@ public class TDView extends SurfaceView implements
             enemy.update(player.getSpeed());
             if(enemy.isSurpassed()) {
                 points++;
+                if(points % 100 == 0) {
+                    addEnemy = true;
+                }
                 enemy.setSurpassed(false);
             }
+        }
+        if(addEnemy) {
+            enemies.add(new EnemyShip(context, screenX, screenY));
+            addEnemy = false;
         }
 
         for(final SpaceDust dust:dusts) {
