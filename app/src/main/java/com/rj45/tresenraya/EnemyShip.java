@@ -52,6 +52,10 @@ public class EnemyShip {
         return y;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
     public void update(int playerSpeed){
 
         // Move to the left

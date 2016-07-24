@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -69,6 +70,14 @@ public class TDView extends SurfaceView implements
     }
 
     private void update() {
+
+        for(final EnemyShip enemy:enemies) {
+            if(Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
+                enemy.setX(-100);
+                System.out.println("BOOOOM");
+            }
+        }
+
         player.update();
         for(final EnemyShip enemy:enemies) {
             enemy.update(player.getSpeed());
