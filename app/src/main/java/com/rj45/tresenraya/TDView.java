@@ -32,7 +32,7 @@ public class TDView extends SurfaceView implements
         ourHolder = getHolder();
         paint = new Paint();
         player = new PlayerShip(context, maxX, maxY);
-        for(int i = 0; i < 2; i++) {
+        for(int i = 0; i < 1; i++) {
             enemies.add(new EnemyShip(context, maxX, maxY));
         }
         for(int i = 0; i < 40; i++) {
