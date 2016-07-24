@@ -27,20 +27,40 @@ public class TDView extends SurfaceView implements
     private List<EnemyShip> enemies = new ArrayList<EnemyShip>();
     private List<SpaceDust> dusts = new ArrayList<SpaceDust>();
     private int points;
+    private float distanceRemaining;
+    private long timeTaken;
+    private long timeStarted;
+    private long fastestTime;
+    private int screenX;
+    private int screenY;
+    private Context context;
 
     public TDView(Context context, int maxX, int maxY) {
         super(context);
+        this.context = context;
         ourHolder = getHolder();
         paint = new Paint();
-        player = new PlayerShip(context, maxX, maxY);
-        for(int i = 0; i < 1; i++) {
-            enemies.add(new EnemyShip(context, maxX, maxY));
+        screenX = maxX;
+        screenY = maxY;
+        startGame();
+    }
+
+    public void startGame() {
+        points = 0;
+        player = new PlayerShip(context, screenX, screenY);
+        enemies.clear();
+        dusts.clear();
+        for(int i = 0; i < 4; i++) {
+            enemies.add(new EnemyShip(context, screenX, screenY));
         }
         for(int i = 0; i < 40; i++) {
-            dusts.add(new SpaceDust(maxX, maxY));
+            dusts.add(new SpaceDust(screenX, screenY));
         }
-
-        points = 0;
+        // Reset time and distance
+        distanceRemaining = 10000;// 10 km
+        timeTaken = 0;
+        // Get start time
+        timeStarted = System.currentTimeMillis();
     }
 
     @Override
@@ -73,9 +93,13 @@ public class TDView extends SurfaceView implements
 
         for(final EnemyShip enemy:enemies) {
             if(Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
-                enemy.setX(-100);
-                System.out.println("BOOOOM");
+                enemy.setX(-200);
+                player.decreaseShield();
             }
+        }
+
+        if (player.getShield() < 0) {
+            startGame();
         }
 
         player.update();
@@ -123,6 +147,22 @@ public class TDView extends SurfaceView implements
             paint.setColor(Color.CYAN);
             paint.setTextSize(60);
             canvas.drawText(String.valueOf(points), 100, 100, paint);
+// Draw the hud
+            paint.setTextAlign(Paint.Align.LEFT);
+            paint.setColor(Color.argb(255, 255, 255, 255));
+            paint.setTextSize(25);
+            canvas.drawText("Fastest:"+ fastestTime + "s", 10, 20, paint);
+            canvas.drawText("Time:" + timeTaken + "s", screenX / 2, 20,
+                    paint);
+            canvas.drawText("Distance:" +
+                    distanceRemaining / 1000 +
+                    " KM", screenX / 3, screenY - 20, paint);
+            canvas.drawText("Shield:" +
+                    player.getShield(), 10, screenY - 20, paint);
+
+            canvas.drawText("Speed:" +
+                    player.getSpeed() * 60 +
+                    " MPS", (screenX /3 ) * 2, screenY - 20, paint);
             // Unlock and draw the scene
             ourHolder.unlockCanvasAndPost(canvas);
 

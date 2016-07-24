@@ -20,6 +20,7 @@ public class PlayerShip {
     private int speed;
     private boolean boosting;
     private Rect hitBox;
+    private int shipShield = 2;
 
     public PlayerShip(Context context, int maxX, int maxY) {
         x = 50;
@@ -44,6 +45,12 @@ public class PlayerShip {
         boosting = false;
     }
 
+    public int getShield() { return shipShield; }
+
+    public void decreaseShield() {
+        shipShield--;
+    }
+
     public void update() {
         // Are we boosting?
         if (boosting) {
@@ -51,7 +58,7 @@ public class PlayerShip {
             speed += 2;
         } else {
             // Slow down
-            speed -= 5;
+            speed -= 3;
         }
         // Constrain top speed
         if (speed > MAX_SPEED) {
