@@ -20,6 +20,7 @@ import android.view.SurfaceView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TDView extends SurfaceView implements
@@ -29,6 +30,7 @@ public class TDView extends SurfaceView implements
     Thread gameThread = null;
     private PlayerShip player;
     private Paint paint;
+    private Paint invulnerabilityPaint;
     private Canvas canvas;
     private SurfaceHolder ourHolder;
     private List<EnemyShip> enemies = new ArrayList<>();
@@ -42,12 +44,15 @@ public class TDView extends SurfaceView implements
     private Context context;
     private boolean gameEnded = false;
     MediaPlayer mediaPlayer = null;
+    private boolean invulnerability = false;
+    private Date invulnerabilityTimer;
 
     public TDView(Context context, int maxX, int maxY) {
         super(context);
         this.context = context;
         ourHolder = getHolder();
         paint = new Paint();
+        invulnerabilityPaint = new Paint();
         screenX = maxX;
         screenY = maxY;
         mediaPlayer = MediaPlayer.create(context, R.raw.flappenny);
@@ -116,12 +121,21 @@ public class TDView extends SurfaceView implements
         if(!gameEnded) {
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
             enemyCopies.addAll(enemies);
-            for (final EnemyShip enemy : enemyCopies) {
-                if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
-                    enemy.setX(-200);
-                    player.decreaseShield();
+            if(!invulnerability) {
+                for (final EnemyShip enemy : enemyCopies) {
+                    if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
+                        enemy.setX(-200);
+                        player.decreaseShield();
+                        invulnerability = true;
+                        invulnerabilityTimer = new Date();
+                    }
                 }
             }
+
+            if(invulnerability && null != invulnerabilityTimer && (invulnerabilityTimer.getTime() + 3000) <= new Date().getTime()){
+                invulnerability = false;
+            }
+
 
             player.update();
             for (final EnemyShip enemy : enemyCopies) {
@@ -167,6 +181,24 @@ public class TDView extends SurfaceView implements
             for (final SpaceDust dust : dusts) {
                 canvas.drawPoint(dust.getX(), dust.getY(), paint);
             }
+
+            invulnerabilityPaint.setStyle(Paint.Style.STROKE );
+            invulnerabilityPaint.setTextSize(80);
+
+            if(invulnerability) {
+
+                invulnerabilityPaint.setColor(Color.WHITE);
+                canvas.drawText("Invulnerable 3''!!" ,screenX/2 - screenX/4 + screenX/10, screenY/2 , invulnerabilityPaint);
+                canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
+                        player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
+            }else{
+                invulnerabilityPaint.setColor(Color.BLACK);
+                canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
+                        player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
+
+            }
+
+
 
             // Draw the player
             canvas.drawBitmap(
@@ -246,7 +278,7 @@ public class TDView extends SurfaceView implements
 
     private void endGame() {
         gameEnded = true;
-
+        invulnerability = false;
         if(highestPoints < points){
             highestPoints = points;
         }
