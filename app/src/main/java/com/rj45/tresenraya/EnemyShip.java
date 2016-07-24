@@ -80,4 +80,6 @@ public class EnemyShip {
     public void setSurpassed(boolean surpassed) {
         this.surpassed = surpassed;
     }
+
+    public Rect getHitBox() { return hitBox; }
 }
