@@ -3,23 +3,19 @@ package com.rj45.tresenraya;
 /**
  * Created by Usuario on 23/07/2016.
  */
+
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +39,8 @@ public class TDView extends SurfaceView implements
     private Context context;
     private boolean gameEnded = false;
     MediaPlayer mediaPlayer = null;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
 
     public TDView(Context context, int maxX, int maxY) {
         super(context);
@@ -59,6 +57,13 @@ public class TDView extends SurfaceView implements
                 mediaPlayer.start();
             }
         });
+        // Get a reference to a file called HiScores.
+        // If id doesn't exist one is created
+        prefs = context.getSharedPreferences("HiScores",
+                context.MODE_PRIVATE);
+        // Initialize the editor ready
+        editor = prefs.edit();
+        highestPoints = prefs.getLong("highestPoints", 0);
         startGame();
     }
 
@@ -250,6 +255,9 @@ public class TDView extends SurfaceView implements
 
     private void endGame() {
         gameEnded = true;
+
+        editor.putLong("highestPoints", highestPoints);
+        editor.commit();
 
         if(highestPoints < points){
             highestPoints = points;

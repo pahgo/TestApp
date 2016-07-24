@@ -20,7 +20,7 @@
         android:layout_marginRight="74dp"
         android:layout_marginEnd="74dp"
         android:layout_marginBottom="58dp"
-        android:id="@+id/textHighScore."
+        android:id="@+id/textHighScore"
         android:textColor="@android:color/white" />
 
     <Button
