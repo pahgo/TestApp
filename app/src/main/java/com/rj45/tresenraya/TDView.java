@@ -4,14 +4,21 @@ package com.rj45.tresenraya;
  * Created by Usuario on 23/07/2016.
  */
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,6 +41,7 @@ public class TDView extends SurfaceView implements
     private int screenY;
     private Context context;
     private boolean gameEnded = false;
+    MediaPlayer mediaPlayer = null;
 
     public TDView(Context context, int maxX, int maxY) {
         super(context);
@@ -42,10 +50,19 @@ public class TDView extends SurfaceView implements
         paint = new Paint();
         screenX = maxX;
         screenY = maxY;
+        mediaPlayer = MediaPlayer.create(context, R.raw.flappenny);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.start();
+            }
+        });
         startGame();
     }
 
     public void startGame() {
+
         points = 0;
         player = new PlayerShip(context, screenX, screenY);
         enemies.clear();
@@ -75,6 +92,7 @@ public class TDView extends SurfaceView implements
 
     public void pause() {
         playing = false;
+        mediaPlayer.pause();
         try {
             gameThread.join();
         } catch (InterruptedException e) {
@@ -85,6 +103,7 @@ public class TDView extends SurfaceView implements
 
     public void resume() {
         playing = true;
+        mediaPlayer.start();
         gameThread = new Thread(this);
         gameThread.start();
     }
@@ -97,7 +116,9 @@ public class TDView extends SurfaceView implements
         }
 
         if(!gameEnded) {
-            for (final EnemyShip enemy : enemies) {
+            List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
+            enemyCopies.addAll(enemies);
+            for (final EnemyShip enemy : enemyCopies) {
                 if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
                     enemy.setX(-200);
                     player.decreaseShield();
@@ -105,7 +126,7 @@ public class TDView extends SurfaceView implements
             }
 
             player.update();
-            for (final EnemyShip enemy : enemies) {
+            for (final EnemyShip enemy : enemyCopies) {
                 enemy.update(player.getSpeed());
                 if (enemy.isSurpassed()) {
                     points++;
@@ -117,13 +138,13 @@ public class TDView extends SurfaceView implements
             }
             if (addEnemy) {
                 enemies.add(new EnemyShip(context, screenX, screenY));
-                addEnemy = false;
             }
 
             for (final SpaceDust dust : dusts) {
                 dust.update(player.getSpeed());
             }
         }
+
     }
 
     private void draw() {
@@ -132,8 +153,10 @@ public class TDView extends SurfaceView implements
             canvas = ourHolder.lockCanvas();
             // Rub out the last frame
             canvas.drawColor(Color.argb(255, 0, 0, 0));
+            List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
+            enemyCopies.addAll(enemies);
 
-            for (final EnemyShip enemy: enemies) {
+            for (final EnemyShip enemy: enemyCopies) {
                 canvas.drawBitmap(
                         enemy.getBitmap(),
                         enemy.getX(),
@@ -225,6 +248,7 @@ public class TDView extends SurfaceView implements
 
     private void endGame() {
         gameEnded = true;
+
         if(highestPoints < points){
             highestPoints = points;
         }
