@@ -27,13 +27,13 @@ public class TDView extends SurfaceView implements
     private List<EnemyShip> enemies = new ArrayList<EnemyShip>();
     private List<SpaceDust> dusts = new ArrayList<SpaceDust>();
     private int points;
-    private float distanceRemaining;
     private long timeTaken;
     private long timeStarted;
-    private long fastestTime;
+    private long highestPoints;
     private int screenX;
     private int screenY;
     private Context context;
+    private boolean gameEnded = false;
 
     public TDView(Context context, int maxX, int maxY) {
         super(context);
@@ -57,10 +57,10 @@ public class TDView extends SurfaceView implements
             dusts.add(new SpaceDust(screenX, screenY));
         }
         // Reset time and distance
-        distanceRemaining = 10000;// 10 km
         timeTaken = 0;
         // Get start time
         timeStarted = System.currentTimeMillis();
+        gameEnded = false;
     }
 
     @Override
@@ -91,35 +91,38 @@ public class TDView extends SurfaceView implements
 
     private void update() {
         boolean addEnemy = false;
-        for(final EnemyShip enemy:enemies) {
-            if(Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
-                enemy.setX(-200);
-                player.decreaseShield();
-            }
-        }
 
         if (player.getShield() < 0) {
-            startGame();
+            endGame();
         }
 
-        player.update();
-        for(final EnemyShip enemy:enemies) {
-            enemy.update(player.getSpeed());
-            if(enemy.isSurpassed()) {
-                points++;
-                if(points % 100 == 0) {
-                    addEnemy = true;
+        if(!gameEnded) {
+            for (final EnemyShip enemy : enemies) {
+                if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
+                    enemy.setX(-200);
+                    player.decreaseShield();
                 }
-                enemy.setSurpassed(false);
             }
-        }
-        if(addEnemy) {
-            enemies.add(new EnemyShip(context, screenX, screenY));
-            addEnemy = false;
-        }
 
-        for(final SpaceDust dust:dusts) {
-            dust.update(player.getSpeed());
+            player.update();
+            for (final EnemyShip enemy : enemies) {
+                enemy.update(player.getSpeed());
+                if (enemy.isSurpassed()) {
+                    points++;
+                    if (points % 100 == 0) {
+                        addEnemy = true;
+                    }
+                    enemy.setSurpassed(false);
+                }
+            }
+            if (addEnemy) {
+                enemies.add(new EnemyShip(context, screenX, screenY));
+                addEnemy = false;
+            }
+
+            for (final SpaceDust dust : dusts) {
+                dust.update(player.getSpeed());
+            }
         }
     }
 
@@ -154,22 +157,36 @@ public class TDView extends SurfaceView implements
             paint.setColor(Color.CYAN);
             paint.setTextSize(60);
             canvas.drawText(String.valueOf(points), 100, 100, paint);
-// Draw the hud
-            paint.setTextAlign(Paint.Align.LEFT);
-            paint.setColor(Color.argb(255, 255, 255, 255));
-            paint.setTextSize(25);
-            canvas.drawText("Fastest:"+ fastestTime + "s", 10, 20, paint);
-            canvas.drawText("Time:" + timeTaken + "s", screenX / 2, 20,
-                    paint);
-            canvas.drawText("Distance:" +
-                    distanceRemaining / 1000 +
-                    " KM", screenX / 3, screenY - 20, paint);
-            canvas.drawText("Shield:" +
-                    player.getShield(), 10, screenY - 20, paint);
+            if(!gameEnded) {
+                // Draw the hud
+                paint.setTextAlign(Paint.Align.LEFT);
+                paint.setColor(Color.argb(255, 255, 255, 255));
+                paint.setTextSize(25);
+                canvas.drawText("Fastest:"+ highestPoints + "s", 10, 20, paint);
+                canvas.drawText("Time:" + timeTaken + "s", screenX / 2, 20,
+                        paint);
+                canvas.drawText("Shield:" +
+                        player.getShield(), 10, screenY - 20, paint);
 
-            canvas.drawText("Speed:" +
-                    player.getSpeed() * 60 +
-                    " MPS", (screenX /3 ) * 2, screenY - 20, paint);
+                canvas.drawText("Speed:" +
+                        player.getSpeed() * 60 +
+                        " MPS", (screenX /3 ) * 2, screenY - 20, paint);
+            }
+            else {
+                // Show pause screen
+                paint.setTextSize(80);
+                paint.setTextAlign(Paint.Align.CENTER);
+                canvas.drawText("Game Over", screenX/2, 100, paint);
+                paint.setTextSize(25);
+                canvas.drawText("Highest:"+
+                        highestPoints + "s", screenX/2, 160, paint);
+
+                canvas.drawText("Time:" + timeTaken +
+                        "s", screenX / 2, 200, paint);
+
+                paint.setTextSize(80);
+                canvas.drawText("Tap to replay!", screenX/2, 350, paint);
+            }
             // Unlock and draw the scene
             ourHolder.unlockCanvasAndPost(canvas);
 
@@ -190,6 +207,9 @@ public class TDView extends SurfaceView implements
             // Has the player touched the screen?
             case MotionEvent.ACTION_DOWN:
                 player.startBoost();
+                if(gameEnded) {
+                    startGame();
+                }
                 break;
         }
         return true;
@@ -200,6 +220,13 @@ public class TDView extends SurfaceView implements
             gameThread.sleep(17);
         } catch (InterruptedException e) {
             //Vacío por diseño.
+        }
+    }
+
+    private void endGame() {
+        gameEnded = true;
+        if(highestPoints < points){
+            highestPoints = points;
         }
     }
 }
