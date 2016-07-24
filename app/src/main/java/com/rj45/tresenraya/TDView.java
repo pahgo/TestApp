@@ -31,11 +31,11 @@ public class TDView extends SurfaceView implements
     private Paint paint;
     private Canvas canvas;
     private SurfaceHolder ourHolder;
-    private List<EnemyShip> enemies = new ArrayList<EnemyShip>();
+    private List<EnemyShip> enemies = new ArrayList<>();
     private List<SpaceDust> dusts = new ArrayList<SpaceDust>();
     private int points;
     private long timeTaken;
-    private long timeStarted;
+
     private long highestPoints;
     private int screenX;
     private int screenY;
@@ -75,8 +75,6 @@ public class TDView extends SurfaceView implements
         }
         // Reset time and distance
         timeTaken = 0;
-        // Get start time
-        timeStarted = System.currentTimeMillis();
         gameEnded = false;
     }
 
