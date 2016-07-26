@@ -17,6 +17,7 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import android.content.res.Configuration;
 
 public class TDView extends SurfaceView implements
         Runnable{
@@ -98,19 +99,23 @@ public class TDView extends SurfaceView implements
     public void pause() {
         playing = false;
         mediaPlayer.pause();
-        try {
-            gameThread.join();
-        } catch (InterruptedException e) {
+        if(gameThread != null) {
+            try {
+                gameThread.join();
+            } catch (InterruptedException e) {
 
+            }
         }
 
     }
 
     public void resume() {
-        playing = true;
-        mediaPlayer.start();
-        gameThread = new Thread(this);
-        gameThread.start();
+        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            playing = true;
+            mediaPlayer.start();
+            gameThread = new Thread(this);
+            gameThread.start();
+        }
     }
 
     private void update() {
