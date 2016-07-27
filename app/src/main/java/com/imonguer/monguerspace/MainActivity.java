@@ -18,11 +18,19 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get a reference to the button in our layout
         final Button buttonPlay =
                 (Button) findViewById(R.id.buttonPlay);
-        // Listen for clicks
         buttonPlay.setOnClickListener(this);
+
+        final Button creditsButton =
+                (Button) findViewById(R.id.creditos);
+        creditsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), CreditsActivity.class);
+                startActivity(i);
+            }
+        });
 
         prefs = getSharedPreferences("HiScores", MODE_PRIVATE);
         // Get a reference to the button in our layout

@@ -54,7 +54,7 @@ public class TDView extends SurfaceView implements
         invulnerabilityPaint = new Paint();
         screenX = maxX;
         screenY = maxY;
-        mediaPlayer = MediaPlayer.create(context, R.raw.flappenny);
+        mediaPlayer = MediaPlayer.create(context, R.raw.lookout);
         mediaPlayer.setLooping(true);
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override

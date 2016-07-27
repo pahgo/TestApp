@@ -14,14 +14,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Puntuación máxima"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="74dp"
-        android:layout_marginEnd="74dp"
-        android:layout_marginBottom="58dp"
         android:id="@+id/textHighScore"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"
+        android:layout_below="@+id/buttonPlay"
+        android:layout_alignRight="@+id/buttonPlay"
+        android:layout_alignEnd="@+id/buttonPlay"
+        android:layout_marginTop="25dp" />
 
     <Button
         android:layout_width="wrap_content"
@@ -29,8 +27,14 @@
         android:text="Play"
         android:id="@+id/buttonPlay"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Créditos"
+        android:id="@+id/creditos"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="92dp"
-        android:layout_marginStart="92dp" />
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
