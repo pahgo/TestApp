@@ -51,6 +51,10 @@ public class PlayerShip {
         shipShield--;
     }
 
+    public void increaseShield() {
+        shipShield++;
+    }
+
     public void update() {
         // Are we boosting?
         if (boosting) {

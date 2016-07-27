@@ -3,8 +3,10 @@ package com.imonguer.monguerspace;
 /**
  * Created by Usuario on 23/07/2016.
  */
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,11 +19,11 @@ import android.view.SurfaceView;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import android.content.res.Configuration;
 
 public class TDView extends SurfaceView implements
         Runnable{
 
+    private int dificulty = 1;
     volatile boolean playing;
     Thread gameThread = null;
     private PlayerShip player;
@@ -31,15 +33,14 @@ public class TDView extends SurfaceView implements
     private SurfaceHolder ourHolder;
     private List<EnemyShip> enemies = new ArrayList<>();
     private List<SpaceDust> dusts = new ArrayList<SpaceDust>();
+    private Shield shield;
     private int points;
-    private long timeTaken;
-
     private long highestPoints;
     private int screenX;
     private int screenY;
     private Context context;
     private boolean gameEnded = false;
-    MediaPlayer mediaPlayer = null;
+    private MediaPlayer mediaPlayer = null;
     private boolean invulnerability = false;
     private Date invulnerabilityTimer;
     private SharedPreferences prefs;
@@ -71,18 +72,20 @@ public class TDView extends SurfaceView implements
 
     public void startGame() {
 
+        dificulty = 1;
         points = 0;
         player = new PlayerShip(context, screenX, screenY);
         enemies.clear();
         dusts.clear();
+
+        shield = new Shield(context, screenX, screenY);
+        shield.stopDraw();
         for(int i = 0; i < 4; i++) {
             enemies.add(new EnemyShip(context, screenX, screenY));
         }
         for(int i = 0; i < 40; i++) {
             dusts.add(new SpaceDust(screenX, screenY));
         }
-        // Reset time and distance
-        timeTaken = 0;
         gameEnded = false;
     }
 
@@ -139,6 +142,19 @@ public class TDView extends SurfaceView implements
                 }
             }
 
+            if (shield.needToDraw()) {
+                shield.update(player.getSpeed());
+                if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
+                    shield.respawn();
+                    shield.stopDraw();
+                    player.increaseShield();
+                }
+            }
+
+            if (shield.canDraw(new Date())) {
+                shield.startDraw();
+            }
+
             if(invulnerability && null != invulnerabilityTimer && (invulnerabilityTimer.getTime() + 3000) <= new Date().getTime()){
                 invulnerability = false;
             }
@@ -149,8 +165,12 @@ public class TDView extends SurfaceView implements
                 enemy.update(player.getSpeed());
                 if (enemy.isSurpassed()) {
                     points++;
-                    if (points % 100 == 0) {
+                    if (points == 100) {
                         addEnemy = true;
+                        dificulty++;
+                    } else if (points % (125 * dificulty) == 0) {
+                        addEnemy = true;
+                        dificulty++;
                     }
                     enemy.setSurpassed(false);
                 }
@@ -172,6 +192,7 @@ public class TDView extends SurfaceView implements
             canvas = ourHolder.lockCanvas();
             // Rub out the last frame
             canvas.drawColor(Color.argb(255, 0, 0, 0));
+
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
             enemyCopies.addAll(enemies);
 
@@ -183,13 +204,17 @@ public class TDView extends SurfaceView implements
                         paint);
             }
 
+            if (shield.needToDraw()) {
+                canvas.drawBitmap(shield.getBitmap(), shield.getX(), shield.getY(), paint);
+            }
+
             paint.setColor(Color.argb(255, 255, 255, 255));
 
             for (final SpaceDust dust : dusts) {
                 canvas.drawPoint(dust.getX(), dust.getY(), paint);
             }
 
-            invulnerabilityPaint.setStyle(Paint.Style.STROKE );
+            invulnerabilityPaint.setStyle(Paint.Style.STROKE);
             invulnerabilityPaint.setTextSize(80);
 
             if(invulnerability) {
@@ -222,15 +247,13 @@ public class TDView extends SurfaceView implements
                 paint.setTextAlign(Paint.Align.LEFT);
                 paint.setColor(Color.argb(255, 255, 255, 255));
                 paint.setTextSize(25);
-                canvas.drawText("Fastest:"+ highestPoints + "s", 10, 20, paint);
-                canvas.drawText("Time:" + timeTaken + "s", screenX / 2, 20,
-                        paint);
-                canvas.drawText("Shield:" +
+                canvas.drawText("Puntuación máxima:" + highestPoints + "s", 10, 20, paint);
+                canvas.drawText("Escudos:" +
                         player.getShield(), 10, screenY - 20, paint);
 
-                canvas.drawText("Speed:" +
+                canvas.drawText("Velocidad:" +
                         player.getSpeed() * 60 +
-                        " MPS", (screenX /3 ) * 2, screenY - 20, paint);
+                        " Parsec/s", (screenX / 3) * 2, screenY - 20, paint);
             }
             else {
                 // Show pause screen
@@ -238,14 +261,11 @@ public class TDView extends SurfaceView implements
                 paint.setTextAlign(Paint.Align.CENTER);
                 canvas.drawText("Game Over", screenX/2, 100, paint);
                 paint.setTextSize(25);
-                canvas.drawText("Highest:"+
+                canvas.drawText("Puntuación máxima:" +
                         highestPoints + "s", screenX/2, 160, paint);
 
-                canvas.drawText("Time:" + timeTaken +
-                        "s", screenX / 2, 200, paint);
-
                 paint.setTextSize(80);
-                canvas.drawText("Tap to replay!", screenX/2, 350, paint);
+                canvas.drawText("¡Toca la pantalla para repetir!", screenX / 2, 350, paint);
             }
             // Unlock and draw the scene
             ourHolder.unlockCanvasAndPost(canvas);

@@ -28,13 +28,13 @@ public class EnemyShip {
         bitmap = BitmapFactory.decodeResource
                 (context.getResources(), R.drawable.enemy);
         maxX = screenX;
-        maxY = screenY;
+        maxY = screenY - bitmap.getHeight();
         minX = 0;
         minY = 0;
         Random generator = new Random();
         speed = generator.nextInt(6)+10;
-        x = screenX;
-        y = generator.nextInt(maxY) - bitmap.getHeight();
+        x = screenX + generator.nextInt(500);
+        y = generator.nextInt(maxY);
         hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
         surpassed = false;
     }
@@ -66,7 +66,7 @@ public class EnemyShip {
             Random generator = new Random();
             speed = generator.nextInt(10)+10;
             x = maxX;
-            y = generator.nextInt(maxY) - bitmap.getHeight();
+            y = generator.nextInt(maxY);
             surpassed = true;
         }
 
