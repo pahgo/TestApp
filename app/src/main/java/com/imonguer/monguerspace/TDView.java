@@ -33,6 +33,7 @@ public class TDView extends SurfaceView implements
     private SurfaceHolder ourHolder;
     private List<EnemyShip> enemies = new ArrayList<>();
     private List<SpaceDust> dusts = new ArrayList<SpaceDust>();
+
     private Shield shield;
     private int points;
     private long highestPoints;
@@ -45,6 +46,11 @@ public class TDView extends SurfaceView implements
     private Date invulnerabilityTimer;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
+
+    private Date planetTimer;
+    private Planet moon;
+
+
 
     public TDView(Context context, int maxX, int maxY) {
         super(context);
@@ -86,6 +92,9 @@ public class TDView extends SurfaceView implements
         for(int i = 0; i < 40; i++) {
             dusts.add(new SpaceDust(screenX, screenY));
         }
+
+        moon = new Planet(context, screenX, screenY,2);
+
         gameEnded = false;
     }
 
@@ -182,6 +191,11 @@ public class TDView extends SurfaceView implements
             for (final SpaceDust dust : dusts) {
                 dust.update(player.getSpeed());
             }
+
+            moon.update(player.getSpeed());
+
+
+
         }
 
     }
@@ -195,6 +209,10 @@ public class TDView extends SurfaceView implements
 
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
             enemyCopies.addAll(enemies);
+
+
+            // Se pinta planeta
+            canvas.drawBitmap(moon.getBitmap(), moon.getX(), moon.getY(), paint);
 
             for (final EnemyShip enemy: enemyCopies) {
                 canvas.drawBitmap(
@@ -223,11 +241,6 @@ public class TDView extends SurfaceView implements
                 canvas.drawText("Invulnerable 3''!!" ,screenX/2 - screenX/4 + screenX/10, screenY/2 , invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
                         player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
-            }else{
-                invulnerabilityPaint.setColor(Color.BLACK);
-                canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
-                        player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
-
             }
 
 
