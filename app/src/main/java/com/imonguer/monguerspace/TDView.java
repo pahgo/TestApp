@@ -16,6 +16,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.List;
 public class TDView extends SurfaceView implements
         Runnable{
 
+    private boolean gServicesActive = false;
     private int dificulty = 1;
     volatile boolean playing;
     Thread gameThread = null;
@@ -49,6 +53,11 @@ public class TDView extends SurfaceView implements
 
     private Date planetTimer;
     private Planet moon;
+
+    private long startFrameTime;
+    private long timeThisFrame;
+    private long fps = 0;
+    private boolean debugEnabled = true;
 
 
 
@@ -101,9 +110,18 @@ public class TDView extends SurfaceView implements
     @Override
     public void run() {
         while (playing) {
+            if (debugEnabled) {
+                startFrameTime = System.currentTimeMillis();
+            }
             update();
             draw();
             control();
+            if (debugEnabled) {
+                timeThisFrame = System.currentTimeMillis() - startFrameTime;
+                if (timeThisFrame >= 1) {
+                    fps = 1000 / timeThisFrame;
+                }
+            }
         }
 
     }
@@ -128,6 +146,7 @@ public class TDView extends SurfaceView implements
             gameThread = new Thread(this);
             gameThread.start();
         }
+        gServicesActive = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
     }
 
     private void update() {
@@ -192,10 +211,7 @@ public class TDView extends SurfaceView implements
                 dust.update(player.getSpeed());
             }
 
-            moon.update(player.getSpeed());
-
-
-
+            moon.update();
         }
 
     }
@@ -212,7 +228,9 @@ public class TDView extends SurfaceView implements
 
 
             // Se pinta planeta
-            canvas.drawBitmap(moon.getBitmap(), moon.getX(), moon.getY(), paint);
+            if (moon.getBitmap() != null) {
+                canvas.drawBitmap(moon.getBitmap(), moon.getX(), moon.getY(), paint);
+            }
 
             for (final EnemyShip enemy: enemyCopies) {
                 canvas.drawBitmap(
@@ -256,6 +274,11 @@ public class TDView extends SurfaceView implements
             paint.setTextSize(60);
             canvas.drawText(String.valueOf(points), 100, 100, paint);
             if(!gameEnded) {
+                if (debugEnabled) {
+                    paint.setColor(Color.CYAN);
+                    paint.setTextSize(60);
+                    canvas.drawText("FPS: " + String.valueOf(fps), 100, screenY - 100, paint);
+                }
                 // Draw the hud
                 paint.setTextAlign(Paint.Align.LEFT);
                 paint.setColor(Color.argb(255, 255, 255, 255));
@@ -263,10 +286,6 @@ public class TDView extends SurfaceView implements
                 canvas.drawText("Puntuación máxima:" + highestPoints + "s", 10, 20, paint);
                 canvas.drawText("Escudos:" +
                         player.getShield(), 10, screenY - 20, paint);
-
-                canvas.drawText("Velocidad:" +
-                        player.getSpeed() * 60 +
-                        " Parsec/s", (screenX / 3) * 2, screenY - 20, paint);
             }
             else {
                 // Show pause screen
@@ -310,7 +329,7 @@ public class TDView extends SurfaceView implements
 
     private void control() {
         try {
-            Thread.sleep(17);
+            Thread.sleep(15);
         } catch (InterruptedException e) {
             //Vacío por diseño.
         }

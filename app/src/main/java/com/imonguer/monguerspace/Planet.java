@@ -12,23 +12,16 @@ import java.util.Random;
 public class Planet {
     private int x, y;
     private int speed;
-    // Detect dust leaving the screen
     private int maxX;
     private int maxY;
-    private int minX;
-    private int minY;
     private Bitmap bitmap;
     // Constructor
     public Planet(Context context, int screenX, int screenY, int var){
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
 
-
         maxX = screenX * var;
         maxY = screenY - getBitmap().getHeight() - 25;
-        minX = 0;
-        minY = 0 + getBitmap().getHeight() + 25 ;
-
 
         // Set a speed between 0 and 9
         Random generator = new Random();
@@ -37,12 +30,15 @@ public class Planet {
         x = maxX * 2;
         y = generator.nextInt(maxY);
     }
-    public void update(int playerSpeed){
-        // Speed up when the player does
-        x -= playerSpeed;
-        x -= speed;
 
-
+    public void update() {
+        /* Ya nos hemos pasado, no hacer nada más con él y destruirlo de memoria. */
+        if (bitmap != null && (x + bitmap.getWidth()) < 0) {
+            bitmap.recycle();
+            bitmap = null;
+        } else {
+            x -= speed;
+        }
     }
     // Getters and Setters
     public int getX() {

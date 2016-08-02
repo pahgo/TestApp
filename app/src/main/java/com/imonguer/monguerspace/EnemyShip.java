@@ -11,7 +11,7 @@ import java.util.Random;
  * Created by Usuario on 23/07/2016.
  */
 public class EnemyShip {
-    private Bitmap bitmap;
+    private static Bitmap bitmap = null;
     private int x, y;
     private int speed = 1;
     // Detect enemies leaving the screen
@@ -25,8 +25,10 @@ public class EnemyShip {
 
 
     public EnemyShip(Context context, int screenX, int screenY){
-        bitmap = BitmapFactory.decodeResource
-                (context.getResources(), R.drawable.enemy);
+        if (bitmap == null) {
+            bitmap = BitmapFactory.decodeResource
+                    (context.getResources(), R.drawable.enemy);
+        }
         maxX = screenX;
         maxY = screenY - bitmap.getHeight();
         minX = 0;
