@@ -212,6 +212,7 @@ public class TDView extends SurfaceView implements
             }
 
             moon.update();
+            player.increaseFrameCount();
         }
 
     }

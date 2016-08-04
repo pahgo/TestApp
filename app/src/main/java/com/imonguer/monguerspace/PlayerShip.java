@@ -14,24 +14,29 @@ public class PlayerShip {
     private final int GRAVITIY = -12;
     private int maxY;
     private int minY;
-    private Bitmap bitmap;
+    private Bitmap firstBitmap;
+    private Bitmap secondBitmap;
     private int x;
     private int y;
     private int speed;
     private boolean boosting;
     private Rect hitBox;
     private int shipShield = 2;
+    private int frameCount;
+    private int frame;
 
     public PlayerShip(Context context, int maxX, int maxY) {
         x = 50;
         y = 50;
         speed = 1;
         boosting = false;
-        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.playership);
-        bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 15), (maxY / 15), false);
-        this.maxY = maxY - bitmap.getHeight();
+        firstBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.playership);
+        firstBitmap = Bitmap.createScaledBitmap(firstBitmap, (maxX / 15), (maxY / 15), false);
+        secondBitmap = Bitmap.createScaledBitmap(firstBitmap, (maxX / 16), (maxY / 15), false);
+        this.maxY = maxY - firstBitmap.getHeight();
         this.minY = 0;
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        hitBox = new Rect(x, y, firstBitmap.getWidth(), firstBitmap.getHeight());
+        frameCount = 1;
     }
 
     public Rect getHitBox() {
@@ -85,12 +90,25 @@ public class PlayerShip {
         // Refresh hit box location
         hitBox.left = x;
         hitBox.top = y;
-        hitBox.right = x + bitmap.getWidth();
-        hitBox.bottom = y + bitmap.getHeight();
+        hitBox.right = x + firstBitmap.getWidth();
+        hitBox.bottom = y + firstBitmap.getHeight();
+    }
+
+    public void changeFrame() {
+        frame = frame == 1 ? 2 : 1;
+    }
+
+    public void increaseFrameCount() {
+        if (frameCount > 10) {
+            changeFrame();
+            frameCount = 1;
+        } else {
+            frameCount++;
+        }
     }
 
     public Bitmap getBitmap() {
-        return bitmap;
+        return frame == 1 ? firstBitmap : secondBitmap;
     }
 
     public int getSpeed() {
