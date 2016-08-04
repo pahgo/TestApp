@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Puntuación máxima"
+        android:text="@string/highscore"
         android:id="@+id/textHighScore"
         android:textColor="@android:color/white"
         android:layout_below="@+id/buttonPlay"
@@ -22,17 +22,31 @@
         android:layout_marginTop="25dp" />
 
     <Button
+        android:text="@string/play"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:background="@drawable/buttonshape"
+        android:shadowColor="#324799"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Play"
         android:id="@+id/buttonPlay"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
     <Button
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:background="@drawable/button_credits"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Créditos"
+        android:text="@string/credits"
         android:id="@+id/creditos"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
