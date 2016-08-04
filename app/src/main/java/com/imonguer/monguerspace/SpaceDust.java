@@ -11,14 +11,11 @@ public class SpaceDust {
     // Detect dust leaving the screen
     private int maxX;
     private int maxY;
-    private int minX;
-    private int minY;
     // Constructor
     public SpaceDust(int screenX, int screenY){
         maxX = screenX;
         maxY = screenY;
-        minX = 0;
-        minY = 0;
+
         // Set a speed between 0 and 9
         Random generator = new Random();
         speed = generator.nextInt(10);
