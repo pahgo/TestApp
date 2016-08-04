@@ -42,7 +42,7 @@ public class MainActivity extends BaseGameActivity implements View.OnClickListen
         long fastestTime = prefs.getLong("highestPoints", 0);
         // Put the high score in our TextView
         String highText = getResources().getString(R.string.highscore);
-        textFastestTime.setText(highText + fastestTime);
+        textFastestTime.setText(highText + " " + fastestTime);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class MainActivity extends BaseGameActivity implements View.OnClickListen
         long fastestTime = prefs.getLong("highestPoints", 0);
         // Put the high score in our TextView
         String highText = getResources().getString(R.string.highscore);
-        textFastestTime.setText(highText + fastestTime);
+        textFastestTime.setText(highText + " " + fastestTime);
     }
 
     @Override

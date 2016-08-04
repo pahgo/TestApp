@@ -257,7 +257,8 @@ public class TDView extends SurfaceView implements
             if(invulnerability) {
 
                 invulnerabilityPaint.setColor(Color.WHITE);
-                canvas.drawText("Invulnerable 3''!!" ,screenX/2 - screenX/4 + screenX/10, screenY/2 , invulnerabilityPaint);
+                // WTF Soto? screenX/2 - screenX/4 + screenX/10 ??¿??¿¿?
+                canvas.drawText(getResources().getString(R.string.invulnerability), (screenX * 7) / 20, screenY / 2, invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
                         player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
             }
@@ -284,8 +285,8 @@ public class TDView extends SurfaceView implements
                 paint.setTextAlign(Paint.Align.LEFT);
                 paint.setColor(Color.argb(255, 255, 255, 255));
                 paint.setTextSize(25);
-                canvas.drawText("Puntuación máxima:" + highestPoints + "s", 10, 20, paint);
-                canvas.drawText("Escudos:" +
+                canvas.drawText(getResources().getString(R.string.highscore) + " " + highestPoints, 10, 20, paint);
+                canvas.drawText(getResources().getString(R.string.shield) + ": " +
                         player.getShield(), 10, screenY - 20, paint);
             }
             else {
@@ -294,11 +295,11 @@ public class TDView extends SurfaceView implements
                 paint.setTextAlign(Paint.Align.CENTER);
                 canvas.drawText("Game Over", screenX/2, 100, paint);
                 paint.setTextSize(25);
-                canvas.drawText("Puntuación máxima:" +
-                        highestPoints + "s", screenX/2, 160, paint);
+                canvas.drawText(getResources().getString(R.string.highscore) + ": " +
+                        highestPoints, screenX / 2, 160, paint);
 
                 paint.setTextSize(80);
-                canvas.drawText("¡Toca la pantalla para repetir!", screenX / 2, 350, paint);
+                canvas.drawText(getResources().getString(R.string.replay), screenX / 2, 350, paint);
             }
             // Unlock and draw the scene
             ourHolder.unlockCanvasAndPost(canvas);
