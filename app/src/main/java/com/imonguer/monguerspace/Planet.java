@@ -19,6 +19,7 @@ public class Planet {
     public Planet(Context context, int screenX, int screenY, int var){
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, (bitmap.getHeight() / 2), false);
 
         maxX = screenX * var;
         maxY = screenY - getBitmap().getHeight() - 25;
