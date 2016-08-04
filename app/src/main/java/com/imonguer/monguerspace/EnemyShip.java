@@ -27,7 +27,8 @@ public class EnemyShip {
     public EnemyShip(Context context, int screenX, int screenY){
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource
-                    (context.getResources(), R.drawable.enemy);
+                    (context.getResources(), R.drawable.asteroid);
+            bitmap = Bitmap.createScaledBitmap(bitmap, (screenX / 20), (screenY / 15), false);
         }
         maxX = screenX;
         maxY = screenY - bitmap.getHeight();
