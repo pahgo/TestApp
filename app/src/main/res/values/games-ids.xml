@@ -3,7 +3,7 @@ Google Play game services IDs.
 Save this file as res/values/games-ids.xml in your project.
 -->
 <resources>
-    <string name="package_name">com.imonguer.monguerspace</string>
-    <string name="achievement_sorpasso">CgkI3sTWt4AOEAIQAg</string>
-    <string name="leaderboard_highest_score">CgkI3sTWt4AOEAIQAA</string>
+    <string name="package_name" translatable="false">com.imonguer.monguerspace</string>
+    <string name="achievement_sorpasso" translatable="false">CgkI3sTWt4AOEAIQAg</string>
+    <string name="leaderboard_highest_score" translatable="false">CgkI3sTWt4AOEAIQAA</string>
 </resources>

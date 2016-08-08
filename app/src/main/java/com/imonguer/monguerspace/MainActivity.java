@@ -10,8 +10,9 @@ import android.widget.TextView;
 
 public class MainActivity extends /* BaseGameActivity */ Activity implements View.OnClickListener {
 
-    SharedPreferences prefs;
-    SharedPreferences.Editor editor;
+    private SharedPreferences prefs;
+    private SharedPreferences.Editor editor;
+    private final String DOTS = Constants.DOTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,15 +34,7 @@ public class MainActivity extends /* BaseGameActivity */ Activity implements Vie
         });
 
         prefs = getSharedPreferences("HiScores", MODE_PRIVATE);
-        // Get a reference to the button in our layout
-
-        final TextView textFastestTime =
-                (TextView) findViewById(R.id.textHighScore);
-
-        long fastestTime = prefs.getLong("highestPoints", 0);
-        // Put the high score in our TextView
-        String highText = getResources().getString(R.string.highscore);
-        textFastestTime.setText(highText + " " + fastestTime);
+        writeHighScore((TextView) findViewById(R.id.textHighScore));
     }
 
     @Override
@@ -53,12 +46,16 @@ public class MainActivity extends /* BaseGameActivity */ Activity implements Vie
     @Override
     public void onResume() {
         super.onResume();
-        final TextView textFastestTime =
-                (TextView) findViewById(R.id.textHighScore);
+        writeHighScore((TextView) findViewById(R.id.textHighScore));
+    }
 
+    private void writeHighScore(final TextView view) {
+        view.setText(loadHighScore());
+    }
+
+    private String loadHighScore() {
         long fastestTime = prefs.getLong("highestPoints", 0);
-        // Put the high score in our TextView
         String highText = getResources().getString(R.string.highscore);
-        textFastestTime.setText(highText + " " + fastestTime);
+        return highText + DOTS + fastestTime;
     }
 }

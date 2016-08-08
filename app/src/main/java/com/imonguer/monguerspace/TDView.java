@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -26,6 +27,7 @@ import java.util.List;
 public class TDView extends SurfaceView implements
         Runnable{
 
+    private Vibrator vibrator = null;
     private boolean gServicesActive = false;
     private int dificulty = 1;
     volatile boolean playing;
@@ -46,6 +48,7 @@ public class TDView extends SurfaceView implements
     private Context context;
     private boolean gameEnded = false;
     private MediaPlayer mediaPlayer = null;
+    private MediaPlayer mediaExplosions = null;
     private boolean invulnerability = false;
     private Date invulnerabilityTimer;
     private SharedPreferences prefs;
@@ -70,6 +73,7 @@ public class TDView extends SurfaceView implements
         screenX = maxX;
         screenY = maxY;
         mediaPlayer = MediaPlayer.create(context, R.raw.lookout);
+        mediaPlayer.setVolume(0.25F, 0.25F);
         mediaPlayer.setLooping(true);
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -78,10 +82,15 @@ public class TDView extends SurfaceView implements
             }
         });
 
+        mediaExplosions = MediaPlayer.create(context, R.raw.explosion);
+        mediaExplosions.setLooping(false);
+        mediaExplosions.setVolume(1, 1);
+
         prefs = context.getSharedPreferences("HiScores",
                 Context.MODE_PRIVATE);
         editor = prefs.edit();
         highestPoints = prefs.getLong("highestPoints", 0);
+        vibrator = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
         startGame();
     }
 
@@ -166,6 +175,8 @@ public class TDView extends SurfaceView implements
                         player.decreaseShield();
                         invulnerability = true;
                         invulnerabilityTimer = new Date();
+                        mediaExplosions.start();
+                        vibrator.vibrate(200);
                     }
                 }
             }
@@ -219,9 +230,7 @@ public class TDView extends SurfaceView implements
 
     private void draw() {
         if (ourHolder.getSurface().isValid()) {
-            //First we lock the area of memory we will be drawing to
             canvas = ourHolder.lockCanvas();
-            // Rub out the last frame
             canvas.drawColor(Color.argb(255, 0, 0, 0));
 
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
@@ -285,7 +294,7 @@ public class TDView extends SurfaceView implements
                 paint.setTextAlign(Paint.Align.LEFT);
                 paint.setColor(Color.argb(255, 255, 255, 255));
                 paint.setTextSize(25);
-                canvas.drawText(getResources().getString(R.string.highscore) + " " + highestPoints, 10, 20, paint);
+                canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
                 canvas.drawText(getResources().getString(R.string.shield) + ": " +
                         player.getShield(), 10, screenY - 20, paint);
             }
@@ -295,7 +304,7 @@ public class TDView extends SurfaceView implements
                 paint.setTextAlign(Paint.Align.CENTER);
                 canvas.drawText("Game Over", screenX/2, 100, paint);
                 paint.setTextSize(25);
-                canvas.drawText(getResources().getString(R.string.highscore) + ": " +
+                canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS +
                         highestPoints, screenX / 2, 160, paint);
 
                 paint.setTextSize(80);
