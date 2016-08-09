@@ -74,7 +74,7 @@ public class TDView extends SurfaceView implements
         screenX = maxX;
         screenY = maxY;
         mediaPlayer = MediaPlayer.create(context, R.raw.lookout);
-        mediaPlayer.setVolume(0.25F, 0.25F);
+        mediaPlayer.setVolume(0.5F, 0.5F);
         mediaPlayer.setLooping(true);
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -83,7 +83,7 @@ public class TDView extends SurfaceView implements
             }
         });
 
-        mediaExplosions = MediaPlayer.create(context, R.raw.explosion);
+        mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
         mediaExplosions.setLooping(false);
         mediaExplosions.setVolume(1, 1);
 
