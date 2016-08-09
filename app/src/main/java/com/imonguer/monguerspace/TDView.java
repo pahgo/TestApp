@@ -218,7 +218,7 @@ public class TDView extends SurfaceView implements
                     enemy.setSurpassed(false);
                 }
             }
-            if (addEnemy) {
+            if (addEnemy && enemies.size() < 8) {
                 enemies.add(new EnemyShip(context, screenX, screenY));
             }
 
