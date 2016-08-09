@@ -4,44 +4,33 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.util.Date;
 import java.util.Random;
 
 /**
- * Created by Usuario on 28/07/2016.
+ * Created by iMonguer on 28/07/2016.
  */
 public class Planet {
+
     private int x, y;
     private int speed;
     private int maxX;
     private int maxY;
+    private int screenY;
     private Bitmap bitmap;
-    // Constructor
-    public Planet(Context context, int screenX, int screenY, int var){
+    private Random generator = new Random();
+    private Context context;
+    private boolean draw;
+    private Date lastTimeTaken;
 
-        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
-        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, (bitmap.getHeight() / 2), false);
-
-        maxX = screenX * var;
-        maxY = screenY - getBitmap().getHeight() - 25;
-
-        // Set a speed between 0 and 9
-        Random generator = new Random();
-        speed = 5;
-        // Set the starting coordinates
-        x = maxX * 2;
-        y = generator.nextInt(maxY);
+    public Planet(Context context, int screenX, int screenY){
+        this.context = context;
+        this.screenY = screenY;
+        maxX = screenX;
+        speed = 4;
+        lastTimeTaken = new Date();
     }
 
-    public void update() {
-        /* Ya nos hemos pasado, no hacer nada más con él y destruirlo de memoria. */
-        if (bitmap != null && (x + bitmap.getWidth()) < 0) {
-            bitmap.recycle();
-            bitmap = null;
-        } else {
-            x -= speed;
-        }
-    }
-    // Getters and Setters
     public int getX() {
         return x;
     }
@@ -50,5 +39,48 @@ public class Planet {
     }
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    public void update() {
+        if(bitmap!=null) {
+            x -= speed;
+            if (x < (0 - getBitmap().getWidth() - 10)) {
+                stopDraw();
+            }
+        }
+    }
+
+
+    public void startDraw() {
+        draw = true;
+        int whichBitmap = generator.nextInt(2);
+        switch (whichBitmap){
+            case 0:
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.saturno);
+                break;
+            case 1:
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
+                break;
+        }
+
+        maxY = screenY - getBitmap().getHeight();
+        x = maxX;
+        y = generator.nextInt(maxY) ;
+    }
+
+    public void stopDraw() {
+        lastTimeTaken = new Date();
+        draw = false;
+        if(bitmap != null ) {
+            bitmap.recycle();
+            bitmap = null;
+        }
+    }
+
+    public boolean needToDraw() {
+        return draw;
+    }
+    public boolean canDraw(Date now) {
+        return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_PLANETS) < now.getTime());
     }
 }

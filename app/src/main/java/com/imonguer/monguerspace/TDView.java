@@ -54,13 +54,14 @@ public class TDView extends SurfaceView implements
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
 
-    private Date planetTimer;
-    private Planet moon;
+
+    private Planet planet;
 
     private long startFrameTime;
     private long timeThisFrame;
     private long fps = 0;
     private boolean debugEnabled = true;
+    private boolean showPlanets = true;
 
 
 
@@ -111,7 +112,10 @@ public class TDView extends SurfaceView implements
             dusts.add(new SpaceDust(screenX, screenY));
         }
 
-        moon = new Planet(context, screenX, screenY,2);
+        if(showPlanets) {
+            planet = new Planet(context, screenX, screenY);
+            planet.stopDraw();
+        }
 
         gameEnded = false;
     }
@@ -222,8 +226,21 @@ public class TDView extends SurfaceView implements
                 dust.update(player.getSpeed());
             }
 
-            moon.update();
+            if(showPlanets) {
+                if(planet.needToDraw()){
+                    planet.update();
+                }else if(planet.canDraw(new Date())){
+                    planet.startDraw();
+                }
+            }
+
             player.increaseFrameCount();
+
+
+
+
+
+
         }
 
     }
@@ -238,8 +255,10 @@ public class TDView extends SurfaceView implements
 
 
             // Se pinta planeta
-            if (moon.getBitmap() != null) {
-                canvas.drawBitmap(moon.getBitmap(), moon.getX(), moon.getY(), paint);
+            if (planet.getBitmap() != null) {
+                if(showPlanets && planet.needToDraw()){
+                    canvas.drawBitmap(planet.getBitmap(), planet.getX(), planet.getY(), paint);
+                }
             }
 
             for (final EnemyShip enemy: enemyCopies) {
@@ -266,7 +285,7 @@ public class TDView extends SurfaceView implements
             if(invulnerability) {
 
                 invulnerabilityPaint.setColor(Color.WHITE);
-                // WTF Soto? screenX/2 - screenX/4 + screenX/10 ??¿??¿¿?
+
                 canvas.drawText(getResources().getString(R.string.invulnerability), (screenX * 7) / 20, screenY / 2, invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
                         player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
