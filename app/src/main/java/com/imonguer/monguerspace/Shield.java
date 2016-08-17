@@ -6,13 +6,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
+import android.os.Vibrator;
 
 import java.util.Date;
 import java.util.Random;
 
-/**
- * Created by Usuario on 27/07/2016.
- */
 public class Shield {
 
     private Bitmap bitmap;
@@ -25,8 +24,20 @@ public class Shield {
     private boolean draw;
     private Date lastTimeTaken;
     private boolean surpassed;
+    private static MediaPlayer mediaShield = null;
+    private static Vibrator vibrator = null;
 
     public Shield(Context context, int screenX, int screenY) {
+        if (mediaShield == null) {
+            mediaShield = MediaPlayer.create(context, R.raw.good);
+            mediaShield.setLooping(false);
+            mediaShield.setVolume(1, 1);
+        }
+
+        if (vibrator == null) {
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        }
+
         bitmap = BitmapFactory.decodeResource
                 (context.getResources(), R.drawable.shield);
         bitmap = Bitmap.createScaledBitmap(bitmap, (screenX / 16), (screenY / 10), false);
@@ -75,7 +86,7 @@ public class Shield {
             respawn();
         }
 
-        // Refresh hit box location
+        // Refresh hitActions box location
         hitBox.left = x;
         hitBox.top = y;
         hitBox.right = x + bitmap.getWidth();
@@ -111,13 +122,18 @@ public class Shield {
         return draw;
     }
 
-    public boolean canDraw(Date now) {
-        return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_SHIELDS) > now.getTime());
+    public boolean canDraw() {
+        return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_SHIELDS) > new Date().getTime());
     }
 
     public void draw(Canvas canvas, Paint paint) {
         if (needToDraw()) {
             canvas.drawBitmap(getBitmap(), getX(), getY(), paint);
         }
+    }
+
+    public static void hitActions() {
+        mediaShield.start();
+        vibrator.vibrate(Constants.VIBRATION_TIME);
     }
 }

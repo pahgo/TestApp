@@ -3,7 +3,11 @@ package com.imonguer.monguerspace;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
+import android.os.Vibrator;
 
 import java.util.Random;
 
@@ -22,9 +26,21 @@ public class EnemyShip {
     private int minY;
     private Rect hitBox;
     private boolean surpassed;
+    private static MediaPlayer mediaExplosions = null;
+    private static Vibrator vibrator = null;
 
 
     public EnemyShip(Context context, int screenX, int screenY){
+        if (mediaExplosions == null) {
+            mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
+            mediaExplosions.setLooping(false);
+            mediaExplosions.setVolume(1, 1);
+        }
+
+        if (vibrator == null) {
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        }
+
         if (bitmap == null) {
             bitmap = BitmapFactory.decodeResource
                     (context.getResources(), R.drawable.asteroid);
@@ -40,6 +56,11 @@ public class EnemyShip {
         y = generator.nextInt(maxY);
         hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
         surpassed = false;
+    }
+
+    public static void hitActions() {
+        mediaExplosions.start();
+        vibrator.vibrate(Constants.VIBRATION_TIME);
     }
 
     //Getters and Setters
@@ -73,7 +94,7 @@ public class EnemyShip {
             surpassed = true;
         }
 
-        // Refresh hit box location
+        // Refresh hitActions box location
         hitBox.left = x;
         hitBox.top = y;
         hitBox.right = x + bitmap.getWidth();
@@ -89,4 +110,8 @@ public class EnemyShip {
     }
 
     public Rect getHitBox() { return hitBox; }
+
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawBitmap(bitmap, x, y, paint);
+    }
 }

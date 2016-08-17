@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
-import android.os.Vibrator;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -27,9 +26,8 @@ import java.util.List;
 public class TDView extends SurfaceView implements
         Runnable{
 
-    private Vibrator vibrator = null;
     private boolean gServicesActive = false;
-    private int dificulty = 1;
+    private int difficulty = 1;
     volatile boolean playing;
     Thread gameThread = null;
     private PlayerShip player;
@@ -38,7 +36,7 @@ public class TDView extends SurfaceView implements
     private Canvas canvas;
     private SurfaceHolder ourHolder;
     private List<EnemyShip> enemies = new ArrayList<>();
-    private List<SpaceDust> dusts = new ArrayList<SpaceDust>();
+    private List<SpaceDust> dusts = new ArrayList<>();
 
     private Shield shield;
     private int points;
@@ -48,16 +46,11 @@ public class TDView extends SurfaceView implements
     private Context context;
     private boolean gameEnded = false;
     private MediaPlayer mediaPlayer = null;
-    private MediaPlayer mediaExplosions = null;
-    private MediaPlayer mediaShield = null;
     private boolean invulnerability = false;
     private Date invulnerabilityTimer;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
-
-
     private Planet planet;
-
     private long startFrameTime;
     private long timeThisFrame;
     private long fps = 0;
@@ -71,7 +64,6 @@ public class TDView extends SurfaceView implements
         this.context = context;
         ourHolder = getHolder();
         paint = new Paint();
-        invulnerabilityPaint = new Paint();
         screenX = maxX;
         screenY = maxY;
         mediaPlayer = MediaPlayer.create(context, R.raw.lookout);
@@ -84,25 +76,23 @@ public class TDView extends SurfaceView implements
             }
         });
 
-        mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
-        mediaExplosions.setLooping(false);
-        mediaExplosions.setVolume(1, 1);
-
-        mediaShield = MediaPlayer.create(context, R.raw.good);
-        mediaShield.setLooping(false);
-        mediaShield.setVolume(1, 1);
-
         prefs = context.getSharedPreferences("HiScores",
                 Context.MODE_PRIVATE);
         editor = prefs.edit();
         highestPoints = prefs.getLong("highestPoints", 0);
-        vibrator = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
+
+
+        invulnerabilityPaint = new Paint();
+        invulnerabilityPaint.setStyle(Paint.Style.STROKE);
+        invulnerabilityPaint.setTextSize(80);
+        invulnerabilityPaint.setColor(Color.WHITE);
+
         startGame();
     }
 
     public void startGame() {
 
-        dificulty = 1;
+        difficulty = 1;
         points = 0;
         player = new PlayerShip(context, screenX, screenY);
         enemies.clear();
@@ -154,7 +144,6 @@ public class TDView extends SurfaceView implements
 
             }
         }
-
     }
 
     public void resume() {
@@ -184,8 +173,7 @@ public class TDView extends SurfaceView implements
                         player.decreaseShield();
                         invulnerability = true;
                         invulnerabilityTimer = new Date();
-                        mediaExplosions.start();
-                        vibrator.vibrate(200);
+                        EnemyShip.hitActions();
                     }
                 }
             }
@@ -196,19 +184,17 @@ public class TDView extends SurfaceView implements
                     shield.respawn();
                     shield.stopDraw();
                     player.increaseShield();
-                    mediaShield.start();
-                    vibrator.vibrate(200);
+                    Shield.hitActions();
                 }
             }
 
-            if (shield.canDraw(new Date())) {
+            if (shield.canDraw()) {
                 shield.startDraw();
             }
 
             if(invulnerability && null != invulnerabilityTimer && (invulnerabilityTimer.getTime() + 3000) <= new Date().getTime()){
                 invulnerability = false;
             }
-
 
             player.update();
             for (final EnemyShip enemy : enemyCopies) {
@@ -217,10 +203,10 @@ public class TDView extends SurfaceView implements
                     points++;
                     if (points == 100) {
                         addEnemy = true;
-                        dificulty++;
-                    } else if (points % (125 * dificulty) == 0) {
+                        difficulty++;
+                    } else if (points % (125 * difficulty) == 0) {
                         addEnemy = true;
-                        dificulty++;
+                        difficulty++;
                     }
                     enemy.setSurpassed(false);
                 }
@@ -236,117 +222,103 @@ public class TDView extends SurfaceView implements
             if(showPlanets) {
                 if(planet.needToDraw()){
                     planet.update();
-                }else if(planet.canDraw(new Date())){
+                } else if (planet.canDraw()) {
                     planet.startDraw();
                 }
             }
 
             player.increaseFrameCount();
         }
+    }
 
+    /**
+     * Creado por tema de claridad y legibilidad de código.
+     */
+    private void clean() {
+        canvas.drawColor(Color.argb(255, 0, 0, 0));
     }
 
     private void draw() {
         if (ourHolder.getSurface().isValid()) {
             canvas = ourHolder.lockCanvas();
-            canvas.drawColor(Color.argb(255, 0, 0, 0));
+
+            // Borramos la pantalla.
+            clean();
 
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
             enemyCopies.addAll(enemies);
 
-
-            // Se pinta planeta
-            if (planet.getBitmap() != null) {
-                if(showPlanets && planet.needToDraw()){
-                    canvas.drawBitmap(planet.getBitmap(), planet.getX(), planet.getY(), paint);
-                }
+            // Pintamos desde la capa más interior a la más exterior: Planetas.
+            if (showPlanets) {
+                planet.draw(canvas, paint);
             }
 
+            // Polvo espacial.
+            for (final SpaceDust dust : dusts) {
+                dust.draw(canvas, paint);
+            }
+
+            // Enemigos.
             for (final EnemyShip enemy: enemyCopies) {
-                canvas.drawBitmap(
-                        enemy.getBitmap(),
-                        enemy.getX(),
-                        enemy.getY(),
-                        paint);
+                enemy.draw(canvas, paint);
             }
 
+            // Escudos.
             shield.draw(canvas, paint);
 
-
-            paint.setColor(Color.argb(255, 255, 255, 255));
-
-            for (final SpaceDust dust : dusts) {
-                canvas.drawCircle(dust.getX(), dust.getY(), 2, paint);
-            }
-
-            invulnerabilityPaint.setStyle(Paint.Style.STROKE);
-            invulnerabilityPaint.setTextSize(80);
-
+            // Invulnerabilidad.
             if(invulnerability) {
-
-                invulnerabilityPaint.setColor(Color.WHITE);
-
                 canvas.drawText(getResources().getString(R.string.invulnerability), (screenX * 7) / 20, screenY / 2, invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
                         player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
             }
 
+            // Jugador.
+            player.draw(canvas, paint);
 
-
-            // Draw the player
-            canvas.drawBitmap(
-                    player.getBitmap(),
-                    player.getX(),
-                    player.getY(),
-                    paint);
-
-            paint.setColor(Color.CYAN);
-            paint.setTextSize(60);
-            canvas.drawText(String.valueOf(points), 100, 100, paint);
+            // HUD / Game over.
             if(!gameEnded) {
-                if (debugEnabled) {
-                    paint.setColor(Color.CYAN);
-                    paint.setTextSize(60);
-                    canvas.drawText("FPS: " + String.valueOf(fps), 100, screenY - 100, paint);
-                }
-                // Draw the hud
-                paint.setTextAlign(Paint.Align.LEFT);
-                paint.setColor(Color.argb(255, 255, 255, 255));
-                paint.setTextSize(25);
-                canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
-                canvas.drawText(getResources().getString(R.string.shield) + ": " +
-                        player.getShield(), 10, screenY - 20, paint);
+                drawHUD();
             }
             else {
-                // Show pause screen
-                paint.setTextSize(80);
-                paint.setTextAlign(Paint.Align.CENTER);
-                canvas.drawText("Game Over", screenX/2, 100, paint);
-                paint.setTextSize(25);
-                canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS +
-                        highestPoints, screenX / 2, 160, paint);
-
-                paint.setTextSize(80);
-                canvas.drawText(getResources().getString(R.string.replay), screenX / 2, 350, paint);
+                drawGameOverScreen();
             }
-            // Unlock and draw the scene
             ourHolder.unlockCanvasAndPost(canvas);
-
         }
     }
 
-    // SurfaceView allows us to handle the onTouchEvent
+    private void drawGameOverScreen() {
+        paint.setTextSize(80);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText("Game Over", screenX / 2, 100, paint);
+        canvas.drawText(getResources().getString(R.string.replay), screenX / 2, 350, paint);
+        paint.setTextSize(25);
+        canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS +
+                highestPoints, screenX / 2, 160, paint);
+    }
+
+    private void drawHUD() {
+        paint.setColor(Color.CYAN);
+        paint.setTextSize(60);
+        canvas.drawText(String.valueOf(points), 100, 100, paint);
+
+        if (debugEnabled) {
+            canvas.drawText("FPS: " + String.valueOf(fps), 100, screenY - 100, paint);
+        }
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.argb(255, 255, 255, 255));
+        paint.setTextSize(25);
+        canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
+        canvas.drawText(getResources().getString(R.string.shield) + ": " +
+                player.getShield(), 10, screenY - 20, paint);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
-        // There are many different events in MotionEvent
-        // We care about just 2 - for now.
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-
-            // Has the player lifted their finger up?
             case MotionEvent.ACTION_UP:
                 player.stopBoost();
                 break;
-            // Has the player touched the screen?
             case MotionEvent.ACTION_DOWN:
                 player.startBoost();
                 if(gameEnded) {

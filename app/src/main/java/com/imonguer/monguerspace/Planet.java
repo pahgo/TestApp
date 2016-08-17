@@ -3,6 +3,8 @@ package com.imonguer.monguerspace;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import java.util.Date;
 import java.util.Random;
@@ -27,7 +29,7 @@ public class Planet {
         this.context = context;
         this.screenY = screenY;
         maxX = screenX;
-        speed = Constants.planetsSpeed;
+        speed = Constants.PLANETS_SPEED;
         lastTimeTaken = new Date();
     }
 
@@ -91,7 +93,14 @@ public class Planet {
     public boolean needToDraw() {
         return draw;
     }
-    public boolean canDraw(Date now) {
-        return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_PLANETS) < now.getTime());
+
+    public boolean canDraw() {
+        return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_PLANETS) < new Date().getTime());
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        if (bitmap != null && needToDraw()) {
+            canvas.drawBitmap(bitmap, x, y, paint);
+        }
     }
 }

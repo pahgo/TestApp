@@ -1,5 +1,9 @@
 package com.imonguer.monguerspace;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
 import java.util.Random;
 
 /**
@@ -41,5 +45,10 @@ public class SpaceDust {
     }
     public int getY() {
         return y;
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        paint.setColor(Color.argb(255, 255, 255, 255));
+        canvas.drawCircle(x, y, Constants.DUST_RADIUS, paint);
     }
 }

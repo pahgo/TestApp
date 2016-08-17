@@ -3,6 +3,8 @@ package com.imonguer.monguerspace;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 /**
@@ -87,7 +89,7 @@ public class PlayerShip {
         if (y > maxY) {
             y = maxY;
         }
-        // Refresh hit box location
+        // Refresh hitActions box location
         hitBox.left = x;
         hitBox.top = y;
         hitBox.right = x + firstBitmap.getWidth();
@@ -121,5 +123,9 @@ public class PlayerShip {
 
     public int getY() {
         return y;
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawBitmap(getBitmap(), x, y, paint);
     }
 }

@@ -1,11 +1,10 @@
 package com.imonguer.monguerspace;
 
-/**
- * Created by Usuario on 27/07/2016.
- */
 public class Constants {
-    final public static int TIME_BETWEEN_SHIELDS = 30000;
-    final public static int TIME_BETWEEN_PLANETS = 10000;
-    final public static String DOTS = ": ";
-    final public static int planetsSpeed = 3;
+    public static final int TIME_BETWEEN_SHIELDS = 30000;
+    public static final int TIME_BETWEEN_PLANETS = 10000;
+    public static final String DOTS = ": ";
+    public static final int PLANETS_SPEED = 3;
+    public static final float DUST_RADIUS = 2;
+    public static final int VIBRATION_TIME = 200;
 }
