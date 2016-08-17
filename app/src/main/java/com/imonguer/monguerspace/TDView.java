@@ -49,6 +49,7 @@ public class TDView extends SurfaceView implements
     private boolean gameEnded = false;
     private MediaPlayer mediaPlayer = null;
     private MediaPlayer mediaExplosions = null;
+    private MediaPlayer mediaShield = null;
     private boolean invulnerability = false;
     private Date invulnerabilityTimer;
     private SharedPreferences prefs;
@@ -86,6 +87,10 @@ public class TDView extends SurfaceView implements
         mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
         mediaExplosions.setLooping(false);
         mediaExplosions.setVolume(1, 1);
+
+        mediaShield = MediaPlayer.create(context, R.raw.good);
+        mediaShield.setLooping(false);
+        mediaShield.setVolume(1, 1);
 
         prefs = context.getSharedPreferences("HiScores",
                 Context.MODE_PRIVATE);
@@ -186,11 +191,13 @@ public class TDView extends SurfaceView implements
             }
 
             if (shield.needToDraw()) {
-                shield.update(player.getSpeed());
+                shield.update();
                 if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
                     shield.respawn();
                     shield.stopDraw();
                     player.increaseShield();
+                    mediaShield.start();
+                    vibrator.vibrate(200);
                 }
             }
 
@@ -235,12 +242,6 @@ public class TDView extends SurfaceView implements
             }
 
             player.increaseFrameCount();
-
-
-
-
-
-
         }
 
     }
@@ -269,14 +270,13 @@ public class TDView extends SurfaceView implements
                         paint);
             }
 
-            if (shield.needToDraw()) {
-                canvas.drawBitmap(shield.getBitmap(), shield.getX(), shield.getY(), paint);
-            }
+            shield.draw(canvas, paint);
+
 
             paint.setColor(Color.argb(255, 255, 255, 255));
 
             for (final SpaceDust dust : dusts) {
-                canvas.drawPoint(dust.getX(), dust.getY(), paint);
+                canvas.drawCircle(dust.getX(), dust.getY(), 2, paint);
             }
 
             invulnerabilityPaint.setStyle(Paint.Style.STROKE);

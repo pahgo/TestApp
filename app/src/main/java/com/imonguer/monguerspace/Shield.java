@@ -3,6 +3,8 @@ package com.imonguer.monguerspace;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.Rect;
 
 import java.util.Date;
@@ -27,11 +29,12 @@ public class Shield {
     public Shield(Context context, int screenX, int screenY) {
         bitmap = BitmapFactory.decodeResource
                 (context.getResources(), R.drawable.shield);
+        bitmap = Bitmap.createScaledBitmap(bitmap, (screenX / 16), (screenY / 10), false);
         maxX = screenX;
         maxY = screenY - bitmap.getHeight();
         minX = 0;
         Random generator = new Random();
-        speed = generator.nextInt(6) + 10;
+        speed = 8;
         x = screenX;
         y = generator.nextInt(maxY);
         hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
@@ -64,10 +67,7 @@ public class Shield {
         this.x = x;
     }
 
-    public void update(int playerSpeed) {
-
-        // Move to the left
-        x -= playerSpeed;
+    public void update() {
         x -= speed;
         //respawn when off screen
         if (x < minX - bitmap.getWidth()) {
@@ -113,5 +113,11 @@ public class Shield {
 
     public boolean canDraw(Date now) {
         return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_SHIELDS) > now.getTime());
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        if (needToDraw()) {
+            canvas.drawBitmap(getBitmap(), getX(), getY(), paint);
+        }
     }
 }

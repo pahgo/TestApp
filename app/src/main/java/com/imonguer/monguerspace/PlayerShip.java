@@ -26,8 +26,8 @@ public class PlayerShip {
     private int frame;
 
     public PlayerShip(Context context, int maxX, int maxY) {
-        x = 50;
-        y = 50;
+        x = maxX / 7;
+        y = maxY / 7;
         speed = 1;
         boosting = false;
         firstBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.playership);

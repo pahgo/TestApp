@@ -58,19 +58,23 @@ public class Planet {
         switch (whichBitmap){
             case 0:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.saturno);
+                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 6), (screenY / 5), false);
                 break;
             case 1:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
+                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 8), (screenY / 5), false);
                 break;
             case 2:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.latierra);
+                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 8), (screenY / 5), false);
                 break;
             case 3:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.sol);
+                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 8), (screenY / 5), false);
                 break;
         }
 
-        maxY = screenY - getBitmap().getHeight();
+        maxY = screenY - bitmap.getHeight();
         x = maxX;
         y = generator.nextInt(maxY) ;
     }
