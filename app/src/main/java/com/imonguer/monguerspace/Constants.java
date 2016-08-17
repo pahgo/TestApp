@@ -5,6 +5,7 @@ package com.imonguer.monguerspace;
  */
 public class Constants {
     final public static int TIME_BETWEEN_SHIELDS = 30000;
-    final public static int TIME_BETWEEN_PLANETS = 35000;
+    final public static int TIME_BETWEEN_PLANETS = 10000;
     final public static String DOTS = ": ";
+    final public static int planetsSpeed = 3;
 }

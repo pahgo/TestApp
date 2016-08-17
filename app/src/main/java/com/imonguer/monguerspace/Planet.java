@@ -27,7 +27,7 @@ public class Planet {
         this.context = context;
         this.screenY = screenY;
         maxX = screenX;
-        speed = 4;
+        speed = Constants.planetsSpeed;
         lastTimeTaken = new Date();
     }
 
@@ -53,13 +53,20 @@ public class Planet {
 
     public void startDraw() {
         draw = true;
-        int whichBitmap = generator.nextInt(2);
+        int whichBitmap;
+        whichBitmap = generator.nextInt(4);
         switch (whichBitmap){
             case 0:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.saturno);
                 break;
             case 1:
                 bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
+                break;
+            case 2:
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.latierra);
+                break;
+            case 3:
+                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.sol);
                 break;
         }
 
