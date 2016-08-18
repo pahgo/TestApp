@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MonguerSpace</string>
-    <string name="app_misconfigured">La aplicación está configurada incorrectamente. Comprueba que el nombre del paquete y el certificado coinciden con el ID de cliente creado en la Consola de Desarrollador. Además, si la aplicación no está publicada todavía, comprueba que la cuenta que con la que estás intentando acceder es una cuenta de tester. Más información en los logs.</string>
     <string name="credits">CRÉDITOS</string>
+    <string name="sign_in_failed">Error accediendo. Por favor, comprueba tu conexión de red y reinténtalo.</string>
+    <string name="app_misconfigured">La aplicación está configurada incorrectamente. Comprueba que el nombre del paquete y el certificado coinciden con el ID de cliente creado en la Consola de Desarrollador. Además, si la aplicación no está publicada todavía, comprueba que la cuenta que con la que estás intentando acceder es una cuenta de tester. Más información en los logs.</string>
+    <string name="license_failed">Error en la comprobación de la licencia.</string>
+    <string name="unknown_error">Error desconocido.</string>
+    <string name="highscore">Puntuación máxima</string>
+    <string name="play">JUGAR</string>
+    <string name="invulnerability">¡¡¡Invulnerable 3 s!!!</string>
+    <string name="shield">Escudos</string>
+    <string name="replay">¡Toca la pantalla para jugar!</string>
     <string name="gamehelper_app_misconfigured">La aplicación está configurada incorrectamente. Comprueba que el nombre del paquete y el certificado coinciden con el ID de cliente creado en la Consola de Desarrollador. Además, si la aplicación no está publicada todavía, comprueba que la cuenta que con la que estás intentando acceder es una cuenta de tester. Más información en los logs.</string>
     <string name="gamehelper_license_failed">Error en la comprobación de licencia.</string>
     <string name="gamehelper_sign_in_failed">Error accediendo. Por favor, comprueba tu conexión de red y reinténtalo.</string>
     <string name="gamehelper_unknown_error">Error desconocido.</string>
-    <string name="highscore">Puntuación máxima</string>
-    <string name="invulnerability">¡¡¡Invulnerable 3 s!!!</string>
-    <string name="license_failed">Error en la comprobación de la licencia.</string>
-    <string name="play">JUGAR</string>
-    <string name="replay">¡Toca la pantalla para jugar!</string>
-    <string name="shield">Escudos</string>
-    <string name="sign_in_failed">Error accediendo. Por favor, comprueba tu conexión de red y reinténtalo.</string>
-    <string name="unknown_error">Error desconocido.</string>
 </resources>

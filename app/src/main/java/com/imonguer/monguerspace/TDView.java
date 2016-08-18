@@ -248,15 +248,22 @@ public class TDView extends SurfaceView implements
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
             enemyCopies.addAll(enemies);
 
+            //INI - Pete brutal por concurrentModification - 20160818
+            List<SpaceDust> dustCopies = new ArrayList<SpaceDust>();
+            dustCopies.addAll(dusts);
+            //FIN - Pete brutal por concurrentModification - 20160818
+
             // Pintamos desde la capa más interior a la más exterior: Planetas.
             if (showPlanets) {
                 planet.draw(canvas, paint);
             }
 
             // Polvo espacial.
-            for (final SpaceDust dust : dusts) {
+            //INI - Pete brutal por concurrentModification - 20160818
+            for (final SpaceDust dust : dustCopies) {
                 dust.draw(canvas, paint);
             }
+            //FIN - Pete brutal por concurrentModification - 20160818
 
             // Enemigos.
             for (final EnemyShip enemy: enemyCopies) {

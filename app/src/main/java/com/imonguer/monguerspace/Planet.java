@@ -55,26 +55,11 @@ public class Planet {
 
     public void startDraw() {
         draw = true;
-        int whichBitmap;
-        whichBitmap = generator.nextInt(4);
-        switch (whichBitmap){
-            case 0:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.saturno);
-                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 6), (screenY / 5), false);
-                break;
-            case 1:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.luna);
-                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 8), (screenY / 5), false);
-                break;
-            case 2:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.latierra);
-                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 8), (screenY / 5), false);
-                break;
-            case 3:
-                bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.sol);
-                bitmap = Bitmap.createScaledBitmap(bitmap, (maxX / 8), (screenY / 5), false);
-                break;
-        }
+        int whichBitmap = generator.nextInt(4);
+        Planets p = Planets.getPlanets(whichBitmap);
+
+        bitmap = BitmapFactory.decodeResource(context.getResources(), p.resource);
+        bitmap = scaleBitmap(bitmap, (maxX / 6), (screenY / 5));
 
         maxY = screenY - bitmap.getHeight();
         x = maxX;
@@ -102,5 +87,36 @@ public class Planet {
         if (bitmap != null && needToDraw()) {
             canvas.drawBitmap(bitmap, x, y, paint);
         }
+    }
+
+    private enum Planets {
+        SATURN(0, R.drawable.saturno), MOON(1, R.drawable.luna), EARTH(2, R.drawable.latierra), SUN(3, R.drawable.sol);
+        int selector;
+        int resource;
+
+        Planets(int selector, int resource) {
+            this.selector = selector;
+            this.resource = resource;
+        }
+
+        public static Planets getPlanets(int selector) {
+            Planets planet = SUN;
+            for (final Planets p : Planets.values()) {
+                if (p.selector == selector) {
+                    planet = p;
+                }
+            }
+            return planet;
+        }
+    }
+
+    private Bitmap scaleBitmap(Bitmap bitmap, int targetW, int targetH) {
+        int scaleFactor = 1;
+        if ((targetW > 0) || (targetH > 0)) {
+            scaleFactor = Math.min(bitmap.getWidth()/targetW, bitmap.getHeight()/targetH);
+            scaleFactor = Math.max(scaleFactor, 1);
+        }
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth()/scaleFactor, bitmap.getHeight()/scaleFactor, false);
+        return bitmap;
     }
 }
