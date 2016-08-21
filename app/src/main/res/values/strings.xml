@@ -10,5 +10,6 @@
     <string name="invulnerability">Invulnerable for 3\'!!!</string>
     <string name="shield">Shields</string>
     <string name="replay">Tap to play again!</string>
+    <string name="last_points">Last Points:</string>
 </resources>
 

@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
+import android.util.Log;
 
 import java.util.Date;
 import java.util.Random;
@@ -45,10 +46,11 @@ public class Shield {
         maxY = screenY - bitmap.getHeight();
         minX = 0;
         Random generator = new Random();
-        speed = 8;
+        speed = 20;
         x = screenX;
         y = generator.nextInt(maxY);
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        y = y > maxY-50 ? y-50 : y;      //NO se meta en el banner
+        hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
         lastTimeTaken = new Date();
         surpassed = false;
     }
@@ -112,6 +114,7 @@ public class Shield {
         speed = generator.nextInt(10) + 10;
         x = maxX;
         y = generator.nextInt(maxY);
+        y = y > maxY-50 ? y-50 : y;      //NO se meta en el banner
         if (surpassed) {
             lastTimeTaken = new Date();
             surpassed = false;

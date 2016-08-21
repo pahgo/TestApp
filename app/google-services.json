@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "804648764568",
+    "firebase_url": "https://monguer-space-23599860.firebaseio.com",
+    "project_id": "monguer-space-23599860",
+    "storage_bucket": "monguer-space-23599860.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804648764568:android:e438552c2a158c10",
+        "android_client_info": {
+          "package_name": "com.imonguer.monguerspace"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804648764568-ajq8pt7l5sponur1blgltfd97oefonhj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imonguer.monguerspace",
+            "certificate_hash": "88E7A3FF892CB84A6792D3A3F72133257B4E8EC1"
+          }
+        },
+        {
+          "client_id": "804648764568-d716jjphcjr4836lsifvj5qakalmmru1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imonguer.monguerspace",
+            "certificate_hash": "24E94505B8619A7416850DECCB1A753512946D8F"
+          }
+        },
+        {
+          "client_id": "804648764568-te79c24tmj1kctpb2ki695vj4jb5n9rk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imonguer.monguerspace",
+            "certificate_hash": "99624B15C8E2A9115592CCF361ADF8AFBC9ED401"
+          }
+        },
+        {
+          "client_id": "804648764568-rlep4545dko4tcs7bciumr5ljbiaju1e.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaFbuU5MTlNPDD0Ydlm3Ge3SWNc6qzevA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804648764568-rlep4545dko4tcs7bciumr5ljbiaju1e.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

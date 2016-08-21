@@ -4,7 +4,9 @@ package com.imonguer.monguerspace;
  * Created by Usuario on 23/07/2016.
  */
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
@@ -12,10 +14,15 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -57,8 +64,6 @@ public class TDView extends SurfaceView implements
     private boolean debugEnabled = true;
     private boolean showPlanets = true;
 
-
-
     public TDView(Context context, int maxX, int maxY) {
         super(context);
         this.context = context;
@@ -80,7 +85,6 @@ public class TDView extends SurfaceView implements
                 Context.MODE_PRIVATE);
         editor = prefs.edit();
         highestPoints = prefs.getLong("highestPoints", 0);
-
 
         invulnerabilityPaint = new Paint();
         invulnerabilityPaint.setStyle(Paint.Style.STROKE);
@@ -131,7 +135,6 @@ public class TDView extends SurfaceView implements
                 }
             }
         }
-
     }
 
     public void pause() {
@@ -297,27 +300,27 @@ public class TDView extends SurfaceView implements
     private void drawGameOverScreen() {
         paint.setTextSize(80);
         paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText("Game Over", screenX / 2, 100, paint);
-        canvas.drawText(getResources().getString(R.string.replay), screenX / 2, 350, paint);
+        canvas.drawText(getResources().getString(R.string.GAME_OVER), screenX / 2, 100, paint);
+        canvas.drawText(getResources().getString(R.string.points) + Constants.DOTS + " " + points, screenX / 2, 350, paint);
+        canvas.drawText(getResources().getString(R.string.replay), screenX / 2, 450, paint);
+
         paint.setTextSize(25);
         canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS +
                 highestPoints, screenX / 2, 160, paint);
     }
 
     private void drawHUD() {
-        paint.setColor(Color.CYAN);
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setColor(Color.GREEN);
         paint.setTextSize(60);
-        canvas.drawText(String.valueOf(points), 100, 100, paint);
+        canvas.drawText(getResources().getString(R.string.points) + ": " + String.valueOf(points), 100, 100, paint);
+        canvas.drawText(getResources().getString(R.string.shield) + ": " + player.getShield(), 60, 200, paint);
+        paint.setTextSize(25);
+        canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
 
         if (debugEnabled) {
             canvas.drawText("FPS: " + String.valueOf(fps), 100, screenY - 100, paint);
         }
-        paint.setTextAlign(Paint.Align.LEFT);
-        paint.setColor(Color.argb(255, 255, 255, 255));
-        paint.setTextSize(25);
-        canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
-        canvas.drawText(getResources().getString(R.string.shield) + ": " +
-                player.getShield(), 10, screenY - 20, paint);
     }
 
     @Override
@@ -329,11 +332,17 @@ public class TDView extends SurfaceView implements
             case MotionEvent.ACTION_DOWN:
                 player.startBoost();
                 if(gameEnded) {
-                    startGame();
+                    goToMain();
                 }
                 break;
         }
         return true;
+    }
+
+    private void goToMain() {
+        Intent i = new Intent(context, MainActivity.class);
+        i.putExtra("POINTS", points);
+        context.startActivity(i);
     }
 
     private void control() {

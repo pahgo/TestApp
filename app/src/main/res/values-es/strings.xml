@@ -7,6 +7,7 @@
     <string name="license_failed">Error en la comprobación de la licencia.</string>
     <string name="unknown_error">Error desconocido.</string>
     <string name="highscore">Puntuación máxima</string>
+    <string name="GAME_OVER">Game Over</string>
     <string name="play">JUGAR</string>
     <string name="invulnerability">¡¡¡Invulnerable 3 s!!!</string>
     <string name="shield">Escudos</string>
@@ -15,4 +16,6 @@
     <string name="gamehelper_license_failed">Error en la comprobación de licencia.</string>
     <string name="gamehelper_sign_in_failed">Error accediendo. Por favor, comprueba tu conexión de red y reinténtalo.</string>
     <string name="gamehelper_unknown_error">Error desconocido.</string>
+    <string name="points">Puntos</string>
+    <string name="last_points">Última Puntuación:</string>
 </resources>
