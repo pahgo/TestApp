@@ -8,8 +8,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.imonguer.monguerspace.MainActivity"
-    android:background="@drawable/ui">
+    android:background="#000000"
+    tools:context="com.imonguer.monguerspace.MainActivity">
 
     <TextView
         android:layout_width="wrap_content"
@@ -17,13 +17,14 @@
         android:text="@string/highscore"
         android:id="@+id/textHighScore"
         android:textColor="@android:color/white"
-        android:layout_below="@+id/buttonPlay"
-        android:layout_alignRight="@+id/buttonPlay"
-        android:layout_alignEnd="@+id/buttonPlay"
-        android:layout_marginTop="25dp"
+        android:textAlignment="center"
+        android:layout_alignParentBottom="true"
         android:layout_alignLeft="@+id/buttonPlay"
         android:layout_alignStart="@+id/buttonPlay"
-        android:textAlignment="center" />
+        android:layout_toStartOf="@+id/lastPoints"
+        android:layout_alignRight="@+id/lastPoints"
+        android:layout_alignEnd="@+id/lastPoints"
+        android:textSize="15dp" />
 
     <Button
         android:text="@string/play"
@@ -37,8 +38,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/buttonPlay"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/textGame"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp" />
 
     <Button
         android:textColor="#FFFFFF"
@@ -62,24 +64,64 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/last_points"
         android:id="@+id/lastPoints"
-        android:layout_above="@+id/buttonPlay"
-        android:layout_alignRight="@+id/buttonPlay"
-        android:layout_alignEnd="@+id/buttonPlay"
-        android:layout_marginBottom="25dp"
+        android:visibility="invisible"
+        android:layout_above="@+id/textHighScore"
         android:layout_alignLeft="@+id/buttonPlay"
         android:layout_alignStart="@+id/buttonPlay"
-        android:textAlignment="center"
-        android:visibility="invisible"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignRight="@+id/buttonPlay"
+        android:layout_alignEnd="@+id/buttonPlay"
+        android:layout_alignParentEnd="false"
+        android:textSize="15dp" />
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner">
+        ads:adUnitId="@string/banner"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
     </com.google.android.gms.ads.AdView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/monguer_space"
+        android:id="@+id/company"
+        android:textColor="#ffffff"
+        android:textSize="50dp"
+        android:layout_below="@+id/adView"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/monguer_sub"
+        android:id="@+id/textGame"
+        android:textColor="#ffffff"
+        android:layout_alignWithParentIfMissing="false"
+        android:textAlignment="center"
+        android:layout_below="@+id/company"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:background="@drawable/button_credits"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/instructions"
+        android:id="@+id/instructions"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/adView"
+        android:layout_toEndOf="@+id/adView" />
 
 </RelativeLayout>

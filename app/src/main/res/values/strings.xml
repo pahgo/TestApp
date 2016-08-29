@@ -11,5 +11,14 @@
     <string name="shield">Shields</string>
     <string name="replay">Tap to play again!</string>
     <string name="last_points">Last Points:</string>
+    <string name="monguer_space">MONGUER SPACE</string>
+    <string name="instructions">INSTRUCTIONS</string>
+    <string name="points">Points</string>
+    <string name="monguer_sub">An iMonguerApps Game</string>
+    <string name="programming">PROGRAMMING</string>
+    <string name="monguers">Francisco Férez Salinas\nSergio Penalva Marín\nMiguel Soto García</string>
+    <string name="music">MUSIC</string>
+    <string name="compositor">Juan Antonio Penalva Marín</string>
+    <string name="thanks">THANKS FOR PLAYING!</string>
 </resources>
 

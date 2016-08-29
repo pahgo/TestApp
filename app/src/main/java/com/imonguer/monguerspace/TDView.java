@@ -4,7 +4,6 @@ package com.imonguer.monguerspace;
  * Created by Usuario on 23/07/2016.
  */
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,16 +12,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -34,7 +29,9 @@ public class TDView extends SurfaceView implements
         Runnable{
 
     private boolean gServicesActive = false;
+    private boolean boosting = false;
     private int difficulty = 1;
+    private int points = 0;
     volatile boolean playing;
     Thread gameThread = null;
     private PlayerShip player;
@@ -45,8 +42,9 @@ public class TDView extends SurfaceView implements
     private List<EnemyShip> enemies = new ArrayList<>();
     private List<SpaceDust> dusts = new ArrayList<>();
 
+    private Typeface face;
     private Shield shield;
-    private int points;
+    private int enemiesSurpassedTotal;
     private long highestPoints;
     private int screenX;
     private int screenY;
@@ -67,6 +65,7 @@ public class TDView extends SurfaceView implements
     public TDView(Context context, int maxX, int maxY) {
         super(context);
         this.context = context;
+        face = Typeface.createFromAsset(context.getAssets(), "fonts/android_7.ttf");
         ourHolder = getHolder();
         paint = new Paint();
         screenX = maxX;
@@ -95,9 +94,9 @@ public class TDView extends SurfaceView implements
     }
 
     public void startGame() {
-
-        difficulty = 1;
         points = 0;
+        difficulty = 1;
+        enemiesSurpassedTotal = 0;
         player = new PlayerShip(context, screenX, screenY);
         enemies.clear();
         dusts.clear();
@@ -167,6 +166,12 @@ public class TDView extends SurfaceView implements
         }
 
         if(!gameEnded) {
+            // Si estamos acelerando, ganamos el triple de puntos por frame.
+            if (boosting) {
+                points += 3;
+            } else {
+                points++;
+            }
             List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
             enemyCopies.addAll(enemies);
             if(!invulnerability) {
@@ -184,6 +189,7 @@ public class TDView extends SurfaceView implements
             if (shield.needToDraw()) {
                 shield.update();
                 if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
+                    points += 2500;
                     shield.respawn();
                     shield.stopDraw();
                     player.increaseShield();
@@ -203,11 +209,12 @@ public class TDView extends SurfaceView implements
             for (final EnemyShip enemy : enemyCopies) {
                 enemy.update(player.getSpeed());
                 if (enemy.isSurpassed()) {
-                    points++;
-                    if (points == 100) {
+                    points += 250;
+                    enemiesSurpassedTotal++;
+                    if (enemiesSurpassedTotal == 100) {
                         addEnemy = true;
                         difficulty++;
-                    } else if (points % (125 * difficulty) == 0) {
+                    } else if (enemiesSurpassedTotal % (125 * difficulty) == 0) {
                         addEnemy = true;
                         difficulty++;
                     }
@@ -244,6 +251,7 @@ public class TDView extends SurfaceView implements
     private void draw() {
         if (ourHolder.getSurface().isValid()) {
             canvas = ourHolder.lockCanvas();
+            paint.setTypeface(face);
 
             // Borramos la pantalla.
             clean();
@@ -312,9 +320,9 @@ public class TDView extends SurfaceView implements
     private void drawHUD() {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.GREEN);
-        paint.setTextSize(60);
-        canvas.drawText(getResources().getString(R.string.points) + ": " + String.valueOf(points), 100, 100, paint);
-        canvas.drawText(getResources().getString(R.string.shield) + ": " + player.getShield(), 60, 200, paint);
+        paint.setTextSize(40);
+        canvas.drawText(getResources().getString(R.string.points) + ": " + String.valueOf(points), screenX - 450, 80, paint);
+        canvas.drawText(getResources().getString(R.string.shield) + ": " + player.getShield(), screenX - 450, 160, paint);
         paint.setTextSize(25);
         canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
 
@@ -328,8 +336,10 @@ public class TDView extends SurfaceView implements
         switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:
                 player.stopBoost();
+                boosting = true;
                 break;
             case MotionEvent.ACTION_DOWN:
+                boosting = false;
                 player.startBoost();
                 if(gameEnded) {
                     goToMain();

@@ -18,4 +18,9 @@
     <string name="gamehelper_unknown_error">Error desconocido.</string>
     <string name="points">Puntos</string>
     <string name="last_points">Última Puntuación:</string>
+    <string name="monguer_space">MONGUER SPACE</string>
+    <string name="instructions">INSTRUCCIONES</string>
+    <string name="monguer_sub">An iMonguerApps Game</string>
+    <string name="monguers">Francisco Férez Salinas\nSergio Penalva Marín\nMiguel Soto García</string>
+    <string name="compositor">Juan Antonio Penalva Marín</string>
 </resources>
