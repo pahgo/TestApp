@@ -23,4 +23,7 @@
     <string name="monguer_sub">An iMonguerApps Game</string>
     <string name="monguers">Francisco Férez Salinas\nSergio Penalva Marín\nMiguel Soto García</string>
     <string name="compositor">Juan Antonio Penalva Marín</string>
+    <string name="music">MÚSICA</string>
+    <string name="programming">DESARROLLO</string>
+    <string name="thanks">¡GRACIAS POR JUGAR!</string>
 </resources>
