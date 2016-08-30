@@ -26,4 +26,15 @@
     <string name="music">MÚSICA</string>
     <string name="programming">DESARROLLO</string>
     <string name="thanks">¡GRACIAS POR JUGAR!</string>
+    <string name="instruct1">toca la pantalla para acelerar la nave</string>
+    <string name="instruct2">al acelerar, la nave subirá</string>
+    <string name="instruct3">también consigues puntos más rápido acelerando</string>
+    <string name="instruct4">chocar con un meteorito quita un escudo</string>
+    <string name="instruct5">si te quedas sin escudos, chocar acabará la partida</string>
+    <string name="instruct6">cuando pierdas un escudo serás invulnerable durante 3 segundos</string>
+    <string name="instruct7">a veces aparecerán escudos que podrás recoger</string>
+    <string name="instruct8">los puntos se ganan tanto por avanzar como</string>
+    <string name="instruct9">por esquivar meteoritos y conseguir más escudos</string>
+    <string name="more">toca la pantalla para continuar</string>
+    <string name="instruct10">pulsa \'volver\' para jugar</string>
 </resources>

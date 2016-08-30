@@ -286,7 +286,8 @@ public class TDView extends SurfaceView implements
 
             // Invulnerabilidad.
             if(invulnerability) {
-                canvas.drawText(getResources().getString(R.string.invulnerability), (screenX * 7) / 20, screenY / 2, invulnerabilityPaint);
+                invulnerabilityPaint.setTextAlign(Paint.Align.CENTER);
+                canvas.drawText(getResources().getString(R.string.invulnerability), screenX / 2, screenY / 2, invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
                         player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
             }

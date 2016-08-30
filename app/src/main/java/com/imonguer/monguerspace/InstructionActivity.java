@@ -5,9 +5,12 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
 
-public class GameActivity extends Activity {
+/**
+ * Created by Usuario on 30/08/2016.
+ */
+public class InstructionActivity extends Activity {
 
-    private TDView gameView;
+    private InstructionsView gameView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +20,7 @@ public class GameActivity extends Activity {
         Point size = new Point();
         display.getSize(size);
 
-        gameView = new TDView(this, size.x, size.y);
+        gameView = new InstructionsView(this, size.x, size.y);
 
         setContentView(gameView);
     }
@@ -35,3 +38,4 @@ public class GameActivity extends Activity {
     }
 
 }
+

@@ -32,12 +32,14 @@ public class MainActivity extends /* BaseGameActivity */ Activity implements Vie
 
         final Button play = (Button) findViewById(R.id.buttonPlay);
         final Button credits = (Button) findViewById(R.id.creditos);
+        final Button instructions = (Button) findViewById(R.id.instructions);
 
         play.setTypeface(face);
         credits.setTypeface(face);
 
         play.setOnClickListener(this);
         credits.setOnClickListener(this);
+        instructions.setOnClickListener(this);
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         prefs = getSharedPreferences("HiScores", MODE_PRIVATE);
@@ -71,6 +73,8 @@ public class MainActivity extends /* BaseGameActivity */ Activity implements Vie
             case R.id.creditos:
                 i = new Intent(getApplicationContext(), CreditsActivity.class);
                 break;
+            case R.id.instructions:
+                i = new Intent(getApplicationContext(), InstructionActivity.class);
             default:
                 Log.d("MainActivity", "onClick: default case");
         }

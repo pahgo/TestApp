@@ -90,7 +90,7 @@ public class Planet {
     }
 
     private enum Planets {
-        SATURN(0, R.drawable.saturno), MOON(1, R.drawable.luna), EARTH(2, R.drawable.latierra), SUN(3, R.drawable.sol);
+        SATURN(0, R.drawable.saturno), MOON(1, R.drawable.luna), EARTH(2, R.drawable.latierra);
         int selector;
         int resource;
 
@@ -100,7 +100,7 @@ public class Planet {
         }
 
         public static Planets getPlanets(int selector) {
-            Planets planet = SUN;
+            Planets planet = SATURN;
             for (final Planets p : Planets.values()) {
                 if (p.selector == selector) {
                     planet = p;

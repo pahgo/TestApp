@@ -23,7 +23,6 @@ public class EnemyShip {
     private int minX;
     // Spawn enemies within screen bounds
     private int maxY;
-    private int minY;
     private Rect hitBox;
     private boolean surpassed;
     private static MediaPlayer mediaExplosions = null;
@@ -49,7 +48,6 @@ public class EnemyShip {
         maxX = screenX;
         maxY = screenY - bitmap.getHeight();
         minX = 0;
-        minY = 0;
         Random generator = new Random();
         speed = generator.nextInt(6)+10;
         x = screenX + generator.nextInt(500);
@@ -61,19 +59,6 @@ public class EnemyShip {
     public static void hitActions() {
         mediaExplosions.start();
         vibrator.vibrate(Constants.VIBRATION_TIME);
-    }
-
-    //Getters and Setters
-    public Bitmap getBitmap() {
-        return bitmap;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     public void setX(int x) {

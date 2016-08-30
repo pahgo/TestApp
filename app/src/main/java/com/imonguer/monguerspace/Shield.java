@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
-import android.util.Log;
 
 import java.util.Date;
 import java.util.Random;
@@ -27,8 +26,10 @@ public class Shield {
     private boolean surpassed;
     private static MediaPlayer mediaShield = null;
     private static Vibrator vibrator = null;
+    private boolean forceDraw;
 
     public Shield(Context context, int screenX, int screenY) {
+        forceDraw = false;
         if (mediaShield == null) {
             mediaShield = MediaPlayer.create(context, R.raw.good);
             mediaShield.setLooping(false);
@@ -78,6 +79,10 @@ public class Shield {
 
     public void setX(int x) {
         this.x = x;
+    }
+
+    public void forceDraw() {
+        forceDraw = true;
     }
 
     public void update() {
@@ -130,7 +135,7 @@ public class Shield {
     }
 
     public void draw(Canvas canvas, Paint paint) {
-        if (needToDraw()) {
+        if (forceDraw || needToDraw()) {
             canvas.drawBitmap(getBitmap(), getX(), getY(), paint);
         }
     }
