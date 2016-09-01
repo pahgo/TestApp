@@ -24,6 +24,7 @@ public class Planet {
     private Context context;
     private boolean draw;
     private Date lastTimeTaken;
+    private int lastPlanet;
 
     public Planet(Context context, int screenX, int screenY){
         this.context = context;
@@ -31,11 +32,9 @@ public class Planet {
         maxX = screenX;
         speed = Constants.PLANETS_SPEED;
         lastTimeTaken = new Date();
+        lastPlanet = 1;
     }
 
-    public int getX() {
-        return x;
-    }
     public int getY() {
         return y;
     }
@@ -55,7 +54,11 @@ public class Planet {
 
     public void startDraw() {
         draw = true;
-        int whichBitmap = generator.nextInt(4);
+        int whichBitmap = generator.nextInt(Planets.values().length);
+        while (lastPlanet == whichBitmap) {
+            whichBitmap = generator.nextInt(Planets.values().length);
+        }
+
         Planets p = Planets.getPlanets(whichBitmap);
 
         bitmap = BitmapFactory.decodeResource(context.getResources(), p.resource);
@@ -90,7 +93,10 @@ public class Planet {
     }
 
     private enum Planets {
-        SATURN(0, R.drawable.saturno), MOON(1, R.drawable.luna), EARTH(2, R.drawable.latierra);
+        SATURN(0, R.drawable.saturno), MOON(1, R.drawable.luna), EARTH(2, R.drawable.latierra),
+        BLUEPLANET(3, R.drawable.blueplanet), NEPTUNE(4, R.drawable.neptune), PLUTO(5, R.drawable.pluto),
+        ROCK(6, R.drawable.rock), PURPLE(7, R.drawable.purple), VENUS(8, R.drawable.venus);
+
         int selector;
         int resource;
 

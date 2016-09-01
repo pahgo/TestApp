@@ -59,7 +59,6 @@ public class TDView extends SurfaceView implements
     private long startFrameTime;
     private long timeThisFrame;
     private long fps = 0;
-    private boolean debugEnabled = true;
     private boolean showPlanets = true;
 
     public TDView(Context context, int maxX, int maxY) {
@@ -121,13 +120,13 @@ public class TDView extends SurfaceView implements
     @Override
     public void run() {
         while (playing) {
-            if (debugEnabled) {
+            if (Constants.DEBUG_ENABLED) {
                 startFrameTime = System.currentTimeMillis();
             }
             update();
             draw();
             control();
-            if (debugEnabled) {
+            if (Constants.DEBUG_ENABLED) {
                 timeThisFrame = System.currentTimeMillis() - startFrameTime;
                 if (timeThisFrame >= 1) {
                     fps = 1000 / timeThisFrame;
@@ -327,7 +326,7 @@ public class TDView extends SurfaceView implements
         paint.setTextSize(25);
         canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
 
-        if (debugEnabled) {
+        if (Constants.DEBUG_ENABLED) {
             canvas.drawText("FPS: " + String.valueOf(fps), 100, screenY - 100, paint);
         }
     }

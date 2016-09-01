@@ -45,11 +45,15 @@ public class MainActivity extends /* BaseGameActivity */ Activity implements Vie
         prefs = getSharedPreferences("HiScores", MODE_PRIVATE);
         writeHighScore((TextView) findViewById(R.id.textHighScore));
         if (getIntent().getExtras() != null && getIntent().getExtras().getInt("POINTS") != 0) {
-            /* Dispositivo de prueba. */
-            AdRequest request = new AdRequest.Builder()
-                    //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                    .addTestDevice("819F9C3E1A68FE85E1F7134B04075AF1")
-                    .build();
+            AdRequest request = null;
+            if (Constants.DEBUG_ENABLED) {
+                request = new AdRequest.Builder()
+                        //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                        .addTestDevice("819F9C3E1A68FE85E1F7134B04075AF1")
+                        .build();
+            } else {
+                request = new AdRequest.Builder().build();
+            }
             mAdView.loadAd(request);
             TextView tv = (TextView) findViewById(R.id.lastPoints);
             tv.setTypeface(face);

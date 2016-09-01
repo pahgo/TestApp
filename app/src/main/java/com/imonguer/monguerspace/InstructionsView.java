@@ -21,6 +21,7 @@ public class InstructionsView extends SurfaceView implements
         Runnable {
 
     private int points = 0;
+    private Paint paintShield;
     volatile boolean playing;
     Thread gameThread = null;
     private PlayerShip player;
@@ -43,9 +44,13 @@ public class InstructionsView extends SurfaceView implements
         face = Typeface.createFromAsset(context.getAssets(), "fonts/android_7.ttf");
         ourHolder = getHolder();
         paint = new Paint();
+        paintShield = new Paint();
         screenX = maxX;
         screenY = maxY;
         step = 1;
+        paintShield.setStyle(Paint.Style.STROKE);
+        paintShield.setTextSize(80);
+        paintShield.setColor(Color.WHITE);
 
         startGame();
     }
@@ -131,6 +136,10 @@ public class InstructionsView extends SurfaceView implements
                 enemy.draw(canvas, paint);
             }
 
+            if (step == 3) {
+                canvas.drawCircle(shield.getX() + shield.getBitmap().getWidth() / 2,
+                        shield.getY() + shield.getBitmap().getHeight() / 2, 100, paintShield);
+            }
             // Escudos.
             shield.draw(canvas, paint);
 
