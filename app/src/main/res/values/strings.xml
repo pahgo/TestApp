@@ -32,5 +32,6 @@
     <string name="instruct9">dodging asteroids and picking up shields</string>
     <string name="more">tap the screen to continue</string>
     <string name="instruct10">tap \'back\' button to play</string>
+    <string name="signin_other_error">Some error prevented to log in</string>
 </resources>
 
