@@ -28,12 +28,14 @@ import java.util.List;
 public class TDView extends SurfaceView implements
         Runnable{
 
+    /*INI - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
+    private final long TIME_NEEDED_TO_50_FPS = 1000 / 50; //20ms
+    volatile boolean playing;
+    Thread gameThread = null;
     private boolean gServicesActive = false;
     private boolean boosting = false;
     private int difficulty = 1;
     private int points = 0;
-    volatile boolean playing;
-    Thread gameThread = null;
     private PlayerShip player;
     private Paint paint;
     private Paint invulnerabilityPaint;
@@ -41,7 +43,6 @@ public class TDView extends SurfaceView implements
     private SurfaceHolder ourHolder;
     private List<EnemyShip> enemies = new ArrayList<>();
     private List<SpaceDust> dusts = new ArrayList<>();
-
     private Typeface face;
     private Shield shield;
     private int enemiesSurpassedTotal;
@@ -61,6 +62,7 @@ public class TDView extends SurfaceView implements
     private long fps = 0;
     private boolean showPlanets = true;
 
+    /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
     public TDView(Context context, int maxX, int maxY) {
         super(context);
         this.context = context;
@@ -120,9 +122,9 @@ public class TDView extends SurfaceView implements
     @Override
     public void run() {
         while (playing) {
-            if (Constants.DEBUG_ENABLED) {
-                startFrameTime = System.currentTimeMillis();
-            }
+            /*INI - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
+            startFrameTime = System.currentTimeMillis();
+            /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
             update();
             draw();
             control();
@@ -357,7 +359,12 @@ public class TDView extends SurfaceView implements
 
     private void control() {
         try {
-            Thread.sleep(15);
+            /*INI - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
+            final Long remainingTimeToDisplay = System.currentTimeMillis() - startFrameTime;
+            if (TIME_NEEDED_TO_50_FPS - remainingTimeToDisplay > 0) {
+                Thread.sleep(TIME_NEEDED_TO_50_FPS - remainingTimeToDisplay);
+            }
+            /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
         } catch (InterruptedException e) {
             //Vacío por diseño.
         }
