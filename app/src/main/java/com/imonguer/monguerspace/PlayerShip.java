@@ -11,9 +11,9 @@ import android.graphics.Rect;
  * Created by Usuario on 23/07/2016.
  */
 public class PlayerShip {
-    private final int MAX_SPEED = 25;
+    private final int MAX_SPEED;
     private final int MIN_SPEED = 1;
-    private final int GRAVITIY = -12;
+    private final int GRAVITY;
     private int maxY;
     private int minY;
     private Bitmap firstBitmap;
@@ -28,6 +28,8 @@ public class PlayerShip {
     private int frame;
 
     public PlayerShip(Context context, int maxX, int maxY) {
+        MAX_SPEED = (int) ((26 / 1080.0) * maxY);
+        GRAVITY = (int) ((-12 / 1080.0) * maxY);
         x = maxX / 7;
         y = maxY / 7;
         speed = 1;
@@ -67,10 +69,10 @@ public class PlayerShip {
         // Are we boosting?
         if (boosting) {
             // Speed up
-            speed += 2;
+            speed += (int) ((3 / 1080.0) * maxY);
         } else {
             // Slow down
-            speed -= 3;
+            speed -= (int) ((3 / 1080.0) * maxY);
         }
         // Constrain top speed
         if (speed > MAX_SPEED) {
@@ -81,7 +83,7 @@ public class PlayerShip {
             speed = MIN_SPEED;
         }
         // move the ship up or down
-        y -= speed + GRAVITIY;
+        y -= speed + GRAVITY;
         // But don't let ship stray off screen
         if (y < minY) {
             y = minY;

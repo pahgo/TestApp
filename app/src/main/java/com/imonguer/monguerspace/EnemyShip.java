@@ -13,9 +13,14 @@ import java.util.Random;
 
 /**
  * Created by Usuario on 23/07/2016.
+ *
  */
 public class EnemyShip {
-    private static Bitmap bitmap = null;
+    private static Bitmap firstBitmap = null;
+    private static Bitmap secondBitmap = null;
+    private static MediaPlayer mediaExplosions = null;
+    private static Vibrator vibrator = null;
+    private Bitmap shownBitmap = null;
     private int x, y;
     private int speed = 1;
     // Detect enemies leaving the screen
@@ -25,40 +30,51 @@ public class EnemyShip {
     private int maxY;
     private Rect hitBox;
     private boolean surpassed;
-    private static MediaPlayer mediaExplosions = null;
-    private static Vibrator vibrator = null;
 
 
     public EnemyShip(Context context, int screenX, int screenY){
-        if (mediaExplosions == null) {
-            mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
-            mediaExplosions.setLooping(false);
-            mediaExplosions.setVolume(1, 1);
-        }
+        setMediaExplosions(context);
+        setVibrator(context);
 
-        if (vibrator == null) {
-            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        if (firstBitmap == null || secondBitmap == null) {
+            firstBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.asteroid);
+            secondBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.asteroid2);
+            firstBitmap = Bitmap.createScaledBitmap(firstBitmap, (screenX / 20), (screenY / 15), false);
+            secondBitmap = Bitmap.createScaledBitmap(secondBitmap, (screenX / 20), (screenY / 15), false);
         }
-
-        if (bitmap == null) {
-            bitmap = BitmapFactory.decodeResource
-                    (context.getResources(), R.drawable.asteroid);
-            bitmap = Bitmap.createScaledBitmap(bitmap, (screenX / 20), (screenY / 15), false);
-        }
-        maxX = screenX;
-        maxY = screenY - bitmap.getHeight();
-        minX = 0;
         Random generator = new Random();
-        speed = generator.nextInt(6)+10;
+        maxX = screenX;
+        setSpeed(generator, maxX / 100);
+        shownBitmap = (speed % 2 == 0) ? firstBitmap : secondBitmap;
+        maxY = screenY - firstBitmap.getHeight();
+        minX = 0;
         x = screenX + generator.nextInt(500);
         y = generator.nextInt(maxY);
-        hitBox = new Rect(x, y, bitmap.getWidth(), bitmap.getHeight());
+        hitBox = new Rect(x, y, shownBitmap.getWidth(), shownBitmap.getHeight());
         surpassed = false;
     }
 
     public static void hitActions() {
         mediaExplosions.start();
         vibrator.vibrate(Constants.VIBRATION_TIME);
+    }
+
+    private void setSpeed(Random generator, int n) {
+        speed = generator.nextInt(n) + 10;
+    }
+
+    private void setVibrator(Context context) {
+        if (vibrator == null) {
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        }
+    }
+
+    private void setMediaExplosions(Context context) {
+        if (mediaExplosions == null) {
+            mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
+            mediaExplosions.setLooping(false);
+            mediaExplosions.setVolume(1, 1);
+        }
     }
 
     public void setX(int x) {
@@ -71,9 +87,10 @@ public class EnemyShip {
         x -= playerSpeed;
         x -= speed;
         //respawn when off screen
-        if(x < minX-bitmap.getWidth()){
+        if (x < minX - firstBitmap.getWidth()) {
             Random generator = new Random();
-            speed = generator.nextInt(10)+10;
+            setSpeed(generator, maxX / 100);
+            shownBitmap = (speed % 2 == 0) ? firstBitmap : secondBitmap;
             x = maxX;
             y = generator.nextInt(maxY);
             surpassed = true;
@@ -82,8 +99,10 @@ public class EnemyShip {
         // Refresh hitActions box location
         hitBox.left = x;
         hitBox.top = y;
-        hitBox.right = x + bitmap.getWidth();
-        hitBox.bottom = y + bitmap.getHeight();
+        hitBox.right = x + shownBitmap.getWidth();
+        hitBox.bottom = y + shownBitmap.getHeight();
+
+        hitBox = new Rect(x, y, x + shownBitmap.getWidth(), y + shownBitmap.getHeight());
     }
 
     public boolean isSurpassed() {
@@ -97,6 +116,6 @@ public class EnemyShip {
     public Rect getHitBox() { return hitBox; }
 
     public void draw(Canvas canvas, Paint paint) {
-        canvas.drawBitmap(bitmap, x, y, paint);
+        canvas.drawBitmap(shownBitmap, x, y, paint);
     }
 }

@@ -2,6 +2,7 @@ package com.imonguer.monguerspace;
 
 /**
  * Created by Usuario on 23/07/2016.
+ *
  */
 
 import android.content.Context;
@@ -18,9 +19,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,11 +26,10 @@ import java.util.List;
 public class TDView extends SurfaceView implements
         Runnable{
 
-    /*INI - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
-    private final long TIME_NEEDED_TO_50_FPS = 1000 / 50; //20ms
+    public static final double MAGIC_CONSTANT_Y = 1080.0; //si en mi movil de 1920/1080 va bien... hacemos proporcional con esta constante mágica!
+    private static final double MAGIC_CONSTANT_X = 1920.0;
     volatile boolean playing;
     Thread gameThread = null;
-    private boolean gServicesActive = false;
     private boolean boosting = false;
     private int difficulty = 1;
     private int points = 0;
@@ -58,7 +55,6 @@ public class TDView extends SurfaceView implements
     private SharedPreferences.Editor editor;
     private Planet planet;
     private long startFrameTime;
-    private long timeThisFrame;
     private long fps = 0;
     private boolean showPlanets = true;
 
@@ -85,6 +81,7 @@ public class TDView extends SurfaceView implements
                 Context.MODE_PRIVATE);
         editor = prefs.edit();
         highestPoints = prefs.getLong("highestPoints", 0);
+        editor.apply();
 
         invulnerabilityPaint = new Paint();
         invulnerabilityPaint.setStyle(Paint.Style.STROKE);
@@ -129,7 +126,7 @@ public class TDView extends SurfaceView implements
             draw();
             control();
             if (Constants.DEBUG_ENABLED) {
-                timeThisFrame = System.currentTimeMillis() - startFrameTime;
+                long timeThisFrame = System.currentTimeMillis() - startFrameTime;
                 if (timeThisFrame >= 1) {
                     fps = 1000 / timeThisFrame;
                 }
@@ -144,7 +141,7 @@ public class TDView extends SurfaceView implements
             try {
                 gameThread.join();
             } catch (InterruptedException e) {
-
+                //empty
             }
         }
     }
@@ -156,7 +153,6 @@ public class TDView extends SurfaceView implements
             gameThread = new Thread(this);
             gameThread.start();
         }
-        gServicesActive = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS;
     }
 
     private void update() {
@@ -173,7 +169,7 @@ public class TDView extends SurfaceView implements
             } else {
                 points++;
             }
-            List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
+            List<EnemyShip> enemyCopies = new ArrayList<>();
             enemyCopies.addAll(enemies);
             if(!invulnerability) {
                 for (final EnemyShip enemy : enemyCopies) {
@@ -257,11 +253,11 @@ public class TDView extends SurfaceView implements
             // Borramos la pantalla.
             clean();
 
-            List<EnemyShip> enemyCopies = new ArrayList<EnemyShip>();
+            List<EnemyShip> enemyCopies = new ArrayList<>();
             enemyCopies.addAll(enemies);
 
             //INI - Pete brutal por concurrentModification - 20160818
-            List<SpaceDust> dustCopies = new ArrayList<SpaceDust>();
+            List<SpaceDust> dustCopies = new ArrayList<>();
             dustCopies.addAll(dusts);
             //FIN - Pete brutal por concurrentModification - 20160818
 
@@ -290,7 +286,7 @@ public class TDView extends SurfaceView implements
                 invulnerabilityPaint.setTextAlign(Paint.Align.CENTER);
                 canvas.drawText(getResources().getString(R.string.invulnerability), screenX / 2, screenY / 2, invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
-                        player.getY() + player.getBitmap().getHeight() / 2, 100, invulnerabilityPaint);
+                        player.getY() + player.getBitmap().getHeight() / 2, screenY / 10, invulnerabilityPaint);
             }
 
             // Jugador.
@@ -308,11 +304,14 @@ public class TDView extends SurfaceView implements
     }
 
     private void drawGameOverScreen() {
-        paint.setTextSize(80);
+        /*INI - fferezsa - Tamaño de texto se sale de pantalla*/
         paint.setTextAlign(Paint.Align.CENTER);
-        canvas.drawText(getResources().getString(R.string.GAME_OVER), screenX / 2, 100, paint);
-        canvas.drawText(getResources().getString(R.string.points) + Constants.DOTS + " " + points, screenX / 2, 350, paint);
-        canvas.drawText(getResources().getString(R.string.replay), screenX / 2, 450, paint);
+        int size = screenX / (getResources().getString(R.string.replay).length() - 5);
+        paint.setTextSize(size);
+        /*FIN - fferezsa - Tamaño de texto se sale de pantalla*/
+        canvas.drawText(getResources().getString(R.string.GAME_OVER), screenX / 2, (int) (100 * screenY / MAGIC_CONSTANT_Y), paint);
+        canvas.drawText(getResources().getString(R.string.points) + Constants.DOTS + " " + points, screenX / 2, (int) (350 * screenY / MAGIC_CONSTANT_Y), paint);
+        canvas.drawText(getResources().getString(R.string.replay), screenX / 2, (int) (450 * screenY / MAGIC_CONSTANT_Y), paint);
 
         paint.setTextSize(25);
         canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS +
@@ -323,10 +322,10 @@ public class TDView extends SurfaceView implements
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(Color.GREEN);
         paint.setTextSize(40);
-        canvas.drawText(getResources().getString(R.string.points) + ": " + String.valueOf(points), screenX - 450, 80, paint);
-        canvas.drawText(getResources().getString(R.string.shield) + ": " + player.getShield(), screenX - 450, 160, paint);
+        canvas.drawText(getResources().getString(R.string.points) + ": " + String.valueOf(points), screenX - (int) (450 * screenX / MAGIC_CONSTANT_X), (int) (80 * screenY / MAGIC_CONSTANT_Y), paint);
+        canvas.drawText(getResources().getString(R.string.shield) + ": " + player.getShield(), screenX - (int) (450 * screenX / MAGIC_CONSTANT_X), (int) (160 * screenY / MAGIC_CONSTANT_Y), paint);
         paint.setTextSize(25);
-        canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, 10, 20, paint);
+        canvas.drawText(getResources().getString(R.string.highscore) + Constants.DOTS + highestPoints, (int) (10 * screenX / MAGIC_CONSTANT_X), (int) (20 * screenY / MAGIC_CONSTANT_Y), paint);
 
         if (Constants.DEBUG_ENABLED) {
             canvas.drawText("FPS: " + String.valueOf(fps), 100, screenY - 100, paint);
@@ -361,6 +360,7 @@ public class TDView extends SurfaceView implements
         try {
             /*INI - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
             final Long remainingTimeToDisplay = System.currentTimeMillis() - startFrameTime;
+            long TIME_NEEDED_TO_50_FPS = 1000 / 50;
             if (TIME_NEEDED_TO_50_FPS - remainingTimeToDisplay > 0) {
                 Thread.sleep(TIME_NEEDED_TO_50_FPS - remainingTimeToDisplay);
             }
