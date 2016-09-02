@@ -179,6 +179,7 @@ public class TDView extends SurfaceView implements
                         invulnerability = true;
                         invulnerabilityTimer = new Date();
                         EnemyShip.hitActions();
+                        break;
                     }
                 }
             }

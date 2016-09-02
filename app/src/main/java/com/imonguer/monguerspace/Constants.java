@@ -8,4 +8,5 @@ public class Constants {
     public static final float DUST_RADIUS = 2;
     public static final int VIBRATION_TIME = 200;
     public static final boolean DEBUG_ENABLED = true;
+    public static final boolean ALPHA_MODE = true;
 }

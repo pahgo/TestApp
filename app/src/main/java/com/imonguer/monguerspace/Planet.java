@@ -35,9 +35,6 @@ public class Planet {
         lastPlanet = 1;
     }
 
-    public int getY() {
-        return y;
-    }
     public Bitmap getBitmap() {
         return bitmap;
     }
