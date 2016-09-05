@@ -103,10 +103,14 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
             }
         }
         Log.i(TAG, "onCreate points: %i" + points);
-        if (points != 0 && MyGoogleApi.getInstance(mGoogleApiClient) != null &&
+        if (MyGoogleApi.getInstance(mGoogleApiClient) != null &&
                 MyGoogleApi.getInstance(mGoogleApiClient).getClient() != null && MyGoogleApi.getInstance(mGoogleApiClient).getClient().isConnected()) {
             Log.i(TAG, "onCreate: Submitting score");
-            Games.Leaderboards.submitScore(MyGoogleApi.getInstance(mGoogleApiClient).getClient(), getResources().getString(R.string.leaderboard_best_scores), points);
+            if (points != 0)
+                Games.Leaderboards.submitScore(MyGoogleApi.getInstance(mGoogleApiClient).getClient(), getResources().getString(R.string.leaderboard_best_scores), points);
+            leaderboards.setVisibility(View.VISIBLE);
+            achievements.setVisibility(View.VISIBLE);
+
         }
     }
 
