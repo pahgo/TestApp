@@ -39,4 +39,6 @@
     <string name="instruct10">pulsa \'volver\' para jugar</string>
     <string name="signin_other_error">Un error impidió iniciar sesión</string>
     <string name="signout">Cerrar sesión de Google</string>
+    <string name="leaderboard">Marcadores</string>
+    <string name="achievemnts">Logros</string>
 </resources>

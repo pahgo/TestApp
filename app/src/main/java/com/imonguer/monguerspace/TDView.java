@@ -15,6 +15,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -195,7 +196,7 @@ public class TDView extends SurfaceView implements
                 }
             }
 
-            if (shield.canDraw()) {
+            if (shield.canDraw(player)) {
                 shield.startDraw();
             }
 
@@ -368,6 +369,29 @@ public class TDView extends SurfaceView implements
             /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
         } catch (InterruptedException e) {
             //Vacío por diseño.
+        }
+        controlAchievements();
+    }
+
+    private void controlAchievements() {
+        Log.i("Achievemnts", "controlAchievements: " + points);
+        if (MyGoogleApi.getInstance(null) != null && MyGoogleApi.getInstance(null).getClient() != null && MyGoogleApi.getInstance(null).getClient().isConnected()) {
+            Log.i("Achievemnts", "controlAchievements: ");
+            if (points > 9000) {
+                if (MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000))) {
+                    MyGoogleApi.getInstance(null).revealAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_ii));
+                }
+            }
+            if (points > 90000) {
+                MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_ii));
+                MyGoogleApi.getInstance(null).revealAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_iii));
+            }
+            if (points > 900000) {
+                MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_iii));
+            }
+            if (player.getShield() < 2) {
+                MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_asteroid_crasher));
+            }
         }
     }
 

@@ -14,6 +14,8 @@ import java.util.Random;
 
 public class Shield {
 
+    private static MediaPlayer mediaShield = null;
+    private static Vibrator vibrator = null;
     private Bitmap bitmap;
     private int x, y;
     private int speed = 1;
@@ -24,8 +26,6 @@ public class Shield {
     private boolean draw;
     private Date lastTimeTaken;
     private boolean surpassed;
-    private static MediaPlayer mediaShield = null;
-    private static Vibrator vibrator = null;
     private boolean forceDraw;
 
     public Shield(Context context, int screenX, int screenY) {
@@ -56,6 +56,11 @@ public class Shield {
         surpassed = false;
     }
 
+    public static void hitActions() {
+        mediaShield.start();
+        vibrator.vibrate(Constants.VIBRATION_TIME);
+    }
+
     //Getters and Setters
     public Bitmap getBitmap() {
         return bitmap;
@@ -63,6 +68,10 @@ public class Shield {
 
     public int getX() {
         return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
     }
 
     public boolean isSurpassed() {
@@ -75,10 +84,6 @@ public class Shield {
 
     public int getY() {
         return y;
-    }
-
-    public void setX(int x) {
-        this.x = x;
     }
 
     public void forceDraw() {
@@ -130,18 +135,17 @@ public class Shield {
         return draw;
     }
 
-    public boolean canDraw() {
-        return ((lastTimeTaken.getTime() + Constants.TIME_BETWEEN_SHIELDS) > new Date().getTime());
+    public boolean canDraw(PlayerShip playerShip) {
+        boolean canDraw = (Constants.TIME_BETWEEN_SHIELDS * 50 > playerShip.getFrameCount());
+        if (canDraw) {
+            playerShip.setFrameCount(1);
+        }
+        return canDraw;
     }
 
     public void draw(Canvas canvas, Paint paint) {
         if (forceDraw || needToDraw()) {
             canvas.drawBitmap(getBitmap(), getX(), getY(), paint);
         }
-    }
-
-    public static void hitActions() {
-        mediaShield.start();
-        vibrator.vibrate(Constants.VIBRATION_TIME);
     }
 }

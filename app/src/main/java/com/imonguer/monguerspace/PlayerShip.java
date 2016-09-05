@@ -24,7 +24,7 @@ public class PlayerShip {
     private boolean boosting;
     private Rect hitBox;
     private int shipShield = 2;
-    private int frameCount;
+    private long frameCount;
     private int frame;
 
     public PlayerShip(Context context, int maxX, int maxY) {
@@ -103,9 +103,9 @@ public class PlayerShip {
     }
 
     public void increaseFrameCount() {
-        if (frameCount > 10) {
+        if (frameCount % 10 == 0) {
             changeFrame();
-            frameCount = 1;
+            frameCount++;
         } else {
             frameCount++;
         }
@@ -129,5 +129,13 @@ public class PlayerShip {
 
     public void draw(Canvas canvas, Paint paint) {
         canvas.drawBitmap(getBitmap(), x, y, paint);
+    }
+
+    public long getFrameCount() {
+        return frameCount;
+    }
+
+    public void setFrameCount(long frameCount) {
+        this.frameCount = frameCount;
     }
 }

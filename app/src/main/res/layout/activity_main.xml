@@ -46,9 +46,11 @@
         android:id="@+id/creditos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/leaderboards"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/leaderboards"
         android:background="@drawable/button_credits"
         android:shadowColor="#000000"
         android:shadowDx="0"
@@ -124,6 +126,7 @@
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
 
+    <!--
     <Button
         android:id="@+id/gApiSingIn"
         android:layout_width="wrap_content"
@@ -141,5 +144,61 @@
         android:text="@string/common_signin_button_text_long"
         android:textColor="#FFFFFF"
         android:textSize="15sp" />
+-->
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/sign_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/lastPoints"
+        android:layout_alignLeft="@+id/instructions"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/instructions"
+        android:background="@drawable/button_credits"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/common_signin_button_text_long"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp" />
+
+    <Button
+        android:id="@+id/leaderboards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/sign_in_button"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/sign_in_button"
+        android:layout_toLeftOf="@+id/adView"
+        android:layout_toStartOf="@+id/adView"
+        android:background="@drawable/button_credits"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/leaderboard"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/achievements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/buttonPlay"
+        android:background="@drawable/button_credits"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/achievemnts"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:visibility="invisible" />
+
 
 </RelativeLayout>
