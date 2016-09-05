@@ -9,13 +9,10 @@ import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 
-import java.util.Date;
 import java.util.Random;
 
 public class Shield {
 
-    private static MediaPlayer mediaShield = null;
-    private static Vibrator vibrator = null;
     private Bitmap bitmap;
     private int x, y;
     private int speed = 1;
@@ -24,8 +21,9 @@ public class Shield {
     private int maxY;
     private Rect hitBox;
     private boolean draw;
-    private Date lastTimeTaken;
     private boolean surpassed;
+    private static MediaPlayer mediaShield = null;
+    private static Vibrator vibrator = null;
     private boolean forceDraw;
     private Timer timer;
 
@@ -53,15 +51,8 @@ public class Shield {
         y = generator.nextInt(maxY);
         y = y > maxY-50 ? y-50 : y;      //NO se meta en el banner
         hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
-        lastTimeTaken = new Date();
         surpassed = false;
         timer = new Timer(Constants.TIME_BETWEEN_SHIELDS);
-
-    }
-
-    public static void hitActions() {
-        mediaShield.start();
-        vibrator.vibrate(Constants.VIBRATION_TIME);
     }
 
     //Getters and Setters
@@ -73,20 +64,12 @@ public class Shield {
         return x;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public boolean isSurpassed() {
-        return surpassed;
-    }
-
-    public void setSurpassed(boolean surpassed) {
-        this.surpassed = surpassed;
-    }
-
     public int getY() {
         return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
     }
 
     public void forceDraw() {
@@ -119,7 +102,6 @@ public class Shield {
 
     public void stopDraw() {
         timer = new Timer(Constants.TIME_BETWEEN_SHIELDS);
-        lastTimeTaken = new Date();
         draw = false;
     }
 
@@ -131,26 +113,34 @@ public class Shield {
         y = y > maxY-50 ? y-50 : y;      //NO se meta en el banner
         if (surpassed) {
             timer = new Timer(Constants.TIME_BETWEEN_SHIELDS);
-            lastTimeTaken = new Date();
             surpassed = false;
         }
     }
 
     public boolean needToDraw() {
-        return draw;
+        return canDraw();
     }
 
-    public boolean canDraw(PlayerShip playerShip) {
-        boolean canDraw = ((Constants.TIME_BETWEEN_SHIELDS / 1000 * 50) < playerShip.getFrameCount());
-        if (canDraw) {
-            playerShip.setFrameCount(1);
-        }
-        return canDraw;
+    public boolean canDraw() {
+        return timer.isExpired();
     }
 
     public void draw(Canvas canvas, Paint paint) {
         if (forceDraw || needToDraw()) {
             canvas.drawBitmap(getBitmap(), getX(), getY(), paint);
         }
+    }
+
+    public static void hitActions() {
+        mediaShield.start();
+        vibrator.vibrate(Constants.VIBRATION_TIME);
+    }
+
+    public void pause() {
+        timer.pause();
+    }
+
+    public void resume() {
+        timer.resume();
     }
 }

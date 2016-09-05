@@ -149,7 +149,7 @@ public class InstructionsView extends SurfaceView implements
             drawHUD();
 
             ourHolder.unlockCanvasAndPost(canvas);
-        }
+    }
     }
 
 
@@ -174,6 +174,12 @@ public class InstructionsView extends SurfaceView implements
                 canvas.drawText(getResources().getString(R.string.instruct7), screenX / 2, (screenY / 2) - 50, paint);
                 canvas.drawText(getResources().getString(R.string.instruct8), screenX / 2, (screenY / 2), paint);
                 canvas.drawText(getResources().getString(R.string.instruct9), screenX / 2, (screenY / 2) + 50, paint);
+                canvas.drawText(getResources().getString(R.string.more), screenX / 2, (screenY - 100), paint);
+                break;
+            case 4:
+                canvas.drawText(getResources().getString(R.string.instruct12), screenX / 2, (screenY / 2) - 50, paint);
+                canvas.drawText(getResources().getString(R.string.instruct13), screenX / 2, (screenY / 2), paint);
+                canvas.drawText(getResources().getString(R.string.instruct14), screenX / 2, (screenY / 2) + 50, paint);
                 canvas.drawText(getResources().getString(R.string.more), screenX / 2, (screenY - 100), paint);
                 break;
             default:

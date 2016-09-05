@@ -20,12 +20,12 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class TDView extends SurfaceView implements
         Runnable{
 
+    public static int timesTouch;
     public static final double MAGIC_CONSTANT_Y = 1080.0; //si en mi movil de 1920/1080 va bien... hacemos proporcional con esta constante mágica!
     private static final double MAGIC_CONSTANT_X = 1920.0;
     volatile boolean playing;
@@ -49,8 +49,6 @@ public class TDView extends SurfaceView implements
     private Context context;
     private boolean gameEnded = false;
     private MediaPlayer mediaPlayer = null;
-    private boolean invulnerability = false;
-    private Date invulnerabilityTimer;
     private SharedPreferences prefs;
     private SharedPreferences.Editor editor;
     private Planet planet;
@@ -58,6 +56,8 @@ public class TDView extends SurfaceView implements
     private long fps = 0;
     private boolean showPlanets = true;
     private int framesWithoutCrash = 0;
+    private Timer invulnerableTimer;
+    private boolean pauseUI = false;
 
     /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
     public TDView(Context context, int maxX, int maxY) {
@@ -92,7 +92,13 @@ public class TDView extends SurfaceView implements
         startGame();
     }
 
+    public int getTimesTouch() {
+        return timesTouch;
+    }
+
     public void startGame() {
+        pauseUI = false;
+        invulnerableTimer = new Timer(0);
         points = 0;
         difficulty = 1;
         enemiesSurpassedTotal = 0;
@@ -138,6 +144,7 @@ public class TDView extends SurfaceView implements
     public void pause() {
         playing = false;
         mediaPlayer.pause();
+        shield.pause();
         if(gameThread != null) {
             try {
                 gameThread.join();
@@ -149,95 +156,90 @@ public class TDView extends SurfaceView implements
 
     public void resume() {
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            shield.resume();
             playing = true;
             mediaPlayer.start();
             gameThread = new Thread(this);
             gameThread.start();
+            timesTouch = 0;
         }
     }
 
     private void update() {
-        boolean addEnemy = false;
+        if (!pauseUI) {
+            boolean addEnemy = false;
 
-        if (player.getShield() < 0) {
-            endGame();
-        }
-
-        if(!gameEnded) {
-            // Si estamos acelerando, ganamos el triple de puntos por frame.
-            if (boosting) {
-                points += 3;
-            } else {
-                points++;
+            if (player.getShield() < 0) {
+                endGame();
             }
-            List<EnemyShip> enemyCopies = new ArrayList<>();
-            enemyCopies.addAll(enemies);
-            if(!invulnerability) {
+
+            if (!gameEnded) {
+                // Si estamos acelerando, ganamos el triple de puntos por frame.
+                if (boosting) {
+                    points += 3;
+                } else {
+                    points++;
+                }
+                List<EnemyShip> enemyCopies = new ArrayList<>();
+                enemyCopies.addAll(enemies);
+                if (invulnerableTimer.isExpired()) {
+                    for (final EnemyShip enemy : enemyCopies) {
+                        if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
+                            enemy.setX(-200);
+                            player.decreaseShield();
+                            invulnerableTimer = new Timer(Constants.INVULNERABLE_TIME);
+                            EnemyShip.hitActions();
+                            framesWithoutCrash = 0;
+                            break;
+                        }
+                    }
+                }
+
+                if (shield.needToDraw()) {
+                    shield.update();
+                    if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
+                        points += 2500;
+                        shield.respawn();
+                        shield.stopDraw();
+                        player.increaseShield();
+                        Shield.hitActions();
+                    }
+                }
+
+                player.update();
                 for (final EnemyShip enemy : enemyCopies) {
-                    if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
-                        enemy.setX(-200);
-                        player.decreaseShield();
-                        invulnerability = true;
-                        invulnerabilityTimer = new Date();
-                        EnemyShip.hitActions();
-                        framesWithoutCrash = 0;
-                        break;
+                    enemy.update(player.getSpeed());
+                    if (enemy.isSurpassed()) {
+                        points += 250;
+                        enemiesSurpassedTotal++;
+                        if (enemiesSurpassedTotal == 100) {
+                            addEnemy = true;
+                            difficulty++;
+                        } else if (enemiesSurpassedTotal % (125 * difficulty) == 0) {
+                            addEnemy = true;
+                            difficulty++;
+                        }
+                        enemy.setSurpassed(false);
                     }
                 }
-            }
-
-            if (shield.needToDraw()) {
-                shield.update();
-                if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
-                    points += 2500;
-                    shield.respawn();
-                    shield.stopDraw();
-                    player.increaseShield();
-                    Shield.hitActions();
+                if (addEnemy && enemies.size() < 8) {
+                    enemies.add(new EnemyShip(context, screenX, screenY));
                 }
-            }
 
-            if (shield.canDraw(player)) {
-                shield.startDraw();
-            }
+                for (final SpaceDust dust : dusts) {
+                    dust.update(player.getSpeed());
+                }
 
-            if(invulnerability && null != invulnerabilityTimer && (invulnerabilityTimer.getTime() + 3000) <= new Date().getTime()){
-                invulnerability = false;
-            }
-
-            player.update();
-            for (final EnemyShip enemy : enemyCopies) {
-                enemy.update(player.getSpeed());
-                if (enemy.isSurpassed()) {
-                    points += 250;
-                    enemiesSurpassedTotal++;
-                    if (enemiesSurpassedTotal == 100) {
-                        addEnemy = true;
-                        difficulty++;
-                    } else if (enemiesSurpassedTotal % (125 * difficulty) == 0) {
-                        addEnemy = true;
-                        difficulty++;
+                if (showPlanets) {
+                    if (planet.needToDraw()) {
+                        planet.update();
+                    } else if (planet.canDraw()) {
+                        planet.startDraw();
                     }
-                    enemy.setSurpassed(false);
                 }
+                framesWithoutCrash++;
+                player.increaseFrameCount();
             }
-            if (addEnemy && enemies.size() < 8) {
-                enemies.add(new EnemyShip(context, screenX, screenY));
-            }
-
-            for (final SpaceDust dust : dusts) {
-                dust.update(player.getSpeed());
-            }
-
-            if(showPlanets) {
-                if(planet.needToDraw()){
-                    planet.update();
-                } else if (planet.canDraw()) {
-                    planet.startDraw();
-                }
-            }
-            framesWithoutCrash++;
-            player.increaseFrameCount();
         }
     }
 
@@ -248,7 +250,7 @@ public class TDView extends SurfaceView implements
         canvas.drawColor(Color.argb(255, 0, 0, 0));
     }
 
-    private void draw() {
+    public void draw() {
         if (ourHolder.getSurface().isValid()) {
             canvas = ourHolder.lockCanvas();
             paint.setTypeface(face);
@@ -285,7 +287,7 @@ public class TDView extends SurfaceView implements
             shield.draw(canvas, paint);
 
             // Invulnerabilidad.
-            if(invulnerability) {
+            if (!invulnerableTimer.isExpired()) {
                 invulnerabilityPaint.setTextAlign(Paint.Align.CENTER);
                 canvas.drawText(getResources().getString(R.string.invulnerability), screenX / 2, screenY / 2, invulnerabilityPaint);
                 canvas.drawCircle(player.getX() + player.getBitmap().getWidth() / 2,
@@ -295,6 +297,9 @@ public class TDView extends SurfaceView implements
             // Jugador.
             player.draw(canvas, paint);
 
+            if (pauseUI && !gameEnded) {
+                drawPause();
+            }
             // HUD / Game over.
             if(!gameEnded) {
                 drawHUD();
@@ -304,6 +309,15 @@ public class TDView extends SurfaceView implements
             }
             ourHolder.unlockCanvasAndPost(canvas);
         }
+    }
+
+    private void drawPause() {
+        /*INI - fferezsa - Tamaño de texto se sale de pantalla*/
+        paint.setTextAlign(Paint.Align.CENTER);
+        int size = screenX / (getResources().getString(R.string.replay).length() - 5);
+        paint.setTextSize(size);
+        canvas.drawText(getResources().getString(R.string.pause), screenX / 2, (int) (100 * screenY / MAGIC_CONSTANT_Y), paint);
+        canvas.drawText(getResources().getString(R.string.tap_to_continue), screenX / 2, (int) (450 * screenY / MAGIC_CONSTANT_Y), paint);
     }
 
     private void drawGameOverScreen() {
@@ -343,6 +357,10 @@ public class TDView extends SurfaceView implements
                 boosting = true;
                 break;
             case MotionEvent.ACTION_DOWN:
+                if (pauseUI) {
+                    pauseUI = false;
+                    resume();
+                }
                 boosting = false;
                 player.startBoost();
                 if(gameEnded) {
@@ -399,11 +417,19 @@ public class TDView extends SurfaceView implements
 
     private void endGame() {
         gameEnded = true;
-        invulnerability = false;
+        invulnerableTimer = new Timer(0);
         if(highestPoints < points){
             highestPoints = points;
             editor.putLong("highestPoints", highestPoints);
             editor.commit();
         }
+    }
+
+    public void setUIPause() {
+        pauseUI = true;
+    }
+
+    public void setTimesTouch(int timesTouch) {
+        TDView.timesTouch = timesTouch;
     }
 }

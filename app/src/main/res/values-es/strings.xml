@@ -41,4 +41,9 @@
     <string name="signout">Cerrar sesión de Google</string>
     <string name="leaderboard">Marcadores</string>
     <string name="achievemnts">Logros</string>
+    <string name="pause">pause</string>
+    <string name="tap_to_continue">Toca la pantalla para continuar</string>
+    <string name="instruct12">pulsa \'volver\' para pausar el juego</string>
+    <string name="instruct13">toca la pantalla para continuar,</string>
+    <string name="instruct14">u otra vez \'volver\' para salir</string>
 </resources>
