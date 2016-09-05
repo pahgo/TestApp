@@ -141,7 +141,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                         getResources().getString(R.string.leaderboard_best_scores)), 666);
                 break;
             case R.id.achievements:
-                startActivityForResult(Games.Achievements.getAchievementsIntent(mGoogleApiClient),
+                startActivityForResult(Games.Achievements.getAchievementsIntent(MyGoogleApi.getInstance(mGoogleApiClient).getClient()),
                         777);
                 break;
             default:
