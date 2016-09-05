@@ -137,12 +137,28 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                 }
                 break;
             case R.id.leaderboards:
-                startActivityForResult(Games.Leaderboards.getLeaderboardIntent(MyGoogleApi.getInstance(mGoogleApiClient).getClient(),
-                        getResources().getString(R.string.leaderboard_best_scores)), 666);
+                if (MyGoogleApi.getInstance(mGoogleApiClient) != null
+                        && MyGoogleApi.getInstance(mGoogleApiClient).getClient() != null
+                        && MyGoogleApi.getInstance(mGoogleApiClient).getClient().isConnected()) {
+                    startActivityForResult(Games.Leaderboards.getLeaderboardIntent(MyGoogleApi.getInstance(mGoogleApiClient).getClient(),
+                            getResources().getString(R.string.leaderboard_best_scores)), 666);
+                } else {
+                    signIn.setVisibility(View.VISIBLE);
+                    leaderboards.setVisibility(View.INVISIBLE);
+                    achievements.setVisibility(View.INVISIBLE);
+                }
                 break;
             case R.id.achievements:
-                startActivityForResult(Games.Achievements.getAchievementsIntent(MyGoogleApi.getInstance(mGoogleApiClient).getClient()),
-                        777);
+                if (MyGoogleApi.getInstance(mGoogleApiClient) != null
+                        && MyGoogleApi.getInstance(mGoogleApiClient).getClient() != null
+                        && MyGoogleApi.getInstance(mGoogleApiClient).getClient().isConnected()) {
+                    startActivityForResult(Games.Achievements.getAchievementsIntent(MyGoogleApi.getInstance(mGoogleApiClient).getClient()),
+                            777);
+                } else {
+                    signIn.setVisibility(View.VISIBLE);
+                    leaderboards.setVisibility(View.INVISIBLE);
+                    achievements.setVisibility(View.INVISIBLE);
+                }
                 break;
             default:
                 Log.d("MainActivity", "onClick: default case");

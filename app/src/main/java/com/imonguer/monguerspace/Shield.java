@@ -27,6 +27,7 @@ public class Shield {
     private Date lastTimeTaken;
     private boolean surpassed;
     private boolean forceDraw;
+    private Timer timer;
 
     public Shield(Context context, int screenX, int screenY) {
         forceDraw = false;
@@ -54,6 +55,8 @@ public class Shield {
         hitBox = new Rect(x, y, x + bitmap.getWidth(), y + bitmap.getHeight());
         lastTimeTaken = new Date();
         surpassed = false;
+        timer = new Timer(Constants.TIME_BETWEEN_SHIELDS);
+
     }
 
     public static void hitActions() {
@@ -115,6 +118,7 @@ public class Shield {
     }
 
     public void stopDraw() {
+        timer = new Timer(Constants.TIME_BETWEEN_SHIELDS);
         lastTimeTaken = new Date();
         draw = false;
     }
@@ -126,6 +130,7 @@ public class Shield {
         y = generator.nextInt(maxY);
         y = y > maxY-50 ? y-50 : y;      //NO se meta en el banner
         if (surpassed) {
+            timer = new Timer(Constants.TIME_BETWEEN_SHIELDS);
             lastTimeTaken = new Date();
             surpassed = false;
         }
@@ -136,7 +141,7 @@ public class Shield {
     }
 
     public boolean canDraw(PlayerShip playerShip) {
-        boolean canDraw = (Constants.TIME_BETWEEN_SHIELDS * 50 > playerShip.getFrameCount());
+        boolean canDraw = ((Constants.TIME_BETWEEN_SHIELDS / 1000 * 50) < playerShip.getFrameCount());
         if (canDraw) {
             playerShip.setFrameCount(1);
         }

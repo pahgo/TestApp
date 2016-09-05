@@ -15,7 +15,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -58,6 +57,7 @@ public class TDView extends SurfaceView implements
     private long startFrameTime;
     private long fps = 0;
     private boolean showPlanets = true;
+    private int framesWithoutCrash = 0;
 
     /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
     public TDView(Context context, int maxX, int maxY) {
@@ -180,6 +180,7 @@ public class TDView extends SurfaceView implements
                         invulnerability = true;
                         invulnerabilityTimer = new Date();
                         EnemyShip.hitActions();
+                        framesWithoutCrash = 0;
                         break;
                     }
                 }
@@ -235,7 +236,7 @@ public class TDView extends SurfaceView implements
                     planet.startDraw();
                 }
             }
-
+            framesWithoutCrash++;
             player.increaseFrameCount();
         }
     }
@@ -374,9 +375,7 @@ public class TDView extends SurfaceView implements
     }
 
     private void controlAchievements() {
-        Log.i("Achievemnts", "controlAchievements: " + points);
         if (MyGoogleApi.getInstance(null) != null && MyGoogleApi.getInstance(null).getClient() != null && MyGoogleApi.getInstance(null).getClient().isConnected()) {
-            Log.i("Achievemnts", "controlAchievements: ");
             if (points > 9000) {
                 if (MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000))) {
                     MyGoogleApi.getInstance(null).revealAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_ii));
@@ -391,6 +390,9 @@ public class TDView extends SurfaceView implements
             }
             if (player.getShield() < 2) {
                 MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_asteroid_crasher));
+            }
+            if (framesWithoutCrash >= 60 * 50) {
+                MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_keep_calm_i_take_the_controls));
             }
         }
     }
