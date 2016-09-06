@@ -187,8 +187,10 @@
         android:id="@+id/achievements"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/leaderboards"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/leaderboards"
         android:layout_below="@+id/buttonPlay"
         android:background="@drawable/button_credits"
         android:shadowColor="#000000"
@@ -200,5 +202,23 @@
         android:textSize="15sp"
         android:visibility="invisible" />
 
+    <Button
+        android:id="@+id/sign_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/lastPoints"
+        android:layout_alignLeft="@+id/instructions"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/instructions"
+        android:background="@drawable/button_credits"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="5"
+        android:text="@string/signout"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

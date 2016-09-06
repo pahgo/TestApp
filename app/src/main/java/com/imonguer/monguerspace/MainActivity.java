@@ -35,6 +35,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
     private GoogleApiClient mGoogleApiClient;
     private Button leaderboards;
     private Button achievements;
+    private Button signOut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
         achievements = (Button) findViewById(R.id.achievements);
         final AdView mAdView = (AdView) findViewById(R.id.adView);
         signIn = (SignInButton) findViewById(R.id.sign_in_button);
+        signOut = (Button) findViewById(R.id.sign_out_button);
 
         play.setTypeface(face);
         credits.setTypeface(face);
@@ -67,6 +69,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
         signIn.setOnClickListener(this);
         leaderboards.setOnClickListener(this);
         achievements.setOnClickListener(this);
+        signOut.setOnClickListener(this);
 
         if (MyGoogleApi.getInstance(mGoogleApiClient) != null && MyGoogleApi.getInstance(mGoogleApiClient).getClient().isConnected()) {
             signIn.setVisibility(View.INVISIBLE);
@@ -102,7 +105,9 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                 mAdView.setVisibility(View.INVISIBLE);
             }
         }
-        Log.i(TAG, "onCreate points: %i" + points);
+        if (prefs.getBoolean("LOGGED", false)) {
+            signIn();
+        }
         if (MyGoogleApi.getInstance(mGoogleApiClient) != null &&
                 MyGoogleApi.getInstance(mGoogleApiClient).getClient() != null && MyGoogleApi.getInstance(mGoogleApiClient).getClient().isConnected()) {
             Log.i(TAG, "onCreate: Submitting score");
@@ -110,7 +115,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                 Games.Leaderboards.submitScore(MyGoogleApi.getInstance(mGoogleApiClient).getClient(), getResources().getString(R.string.leaderboard_best_scores), points);
             leaderboards.setVisibility(View.VISIBLE);
             achievements.setVisibility(View.VISIBLE);
-
+            signOut.setVisibility(View.VISIBLE);
         }
     }
 
@@ -132,8 +137,6 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                         MyGoogleApi.getInstance(mGoogleApiClient).getClient() == null ||
                         !MyGoogleApi.getInstance(mGoogleApiClient).getClient().isConnected()) {
                     signIn();
-                } else if (MyGoogleApi.getInstance(mGoogleApiClient).getClient() != null) {
-                    MyGoogleApi.getInstance(mGoogleApiClient).getClient().disconnect();
                 }
                 break;
             case R.id.leaderboards:
@@ -146,6 +149,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                     signIn.setVisibility(View.VISIBLE);
                     leaderboards.setVisibility(View.INVISIBLE);
                     achievements.setVisibility(View.INVISIBLE);
+                    signOut.setVisibility(View.GONE);
                 }
                 break;
             case R.id.achievements:
@@ -156,9 +160,21 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
                             777);
                 } else {
                     signIn.setVisibility(View.VISIBLE);
-                    leaderboards.setVisibility(View.INVISIBLE);
-                    achievements.setVisibility(View.INVISIBLE);
+                    leaderboards.setVisibility(View.GONE);
+                    achievements.setVisibility(View.GONE);
+                    signOut.setVisibility(View.GONE);
                 }
+                break;
+            case R.id.sign_out_button:
+                if (MyGoogleApi.getInstance(mGoogleApiClient) != null
+                        && MyGoogleApi.getInstance(mGoogleApiClient).getClient() != null) {
+                    MyGoogleApi.getInstance(mGoogleApiClient).getClient().disconnect();
+                }
+                signIn.setVisibility(View.VISIBLE);
+                leaderboards.setVisibility(View.GONE);
+                achievements.setVisibility(View.GONE);
+                signOut.setVisibility(View.GONE);
+                prefs.edit().putBoolean("LOGGED", false).apply();
                 break;
             default:
                 Log.d("MainActivity", "onClick: default case");
@@ -219,28 +235,28 @@ public class MainActivity extends Activity implements View.OnClickListener, Goog
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, "onConnected: conectado?" + (bundle == null ? "null" : bundle.toString()));
-        Log.d(TAG, "onConnected: submitting");
         final Long points = prefs.getLong("highestPoints", 0);
         Games.Leaderboards.submitScore(MyGoogleApi.getInstance(mGoogleApiClient).getClient(), getResources().getString(R.string.leaderboard_best_scores), points);
         if (MyGoogleApi.getInstance(null) != null && MyGoogleApi.getInstance(null).getClient() != null && MyGoogleApi.getInstance(null).getClient().isConnected()) {
             Log.i(TAG, "onConnected: submitting achievements: " + points);
             if (points > 9000) {
-                MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000));
+                if (MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000))) {
+                    MyGoogleApi.getInstance(null).revealAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_ii));
+                }
             }
             if (points > 90000) {
                 MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_ii));
+                MyGoogleApi.getInstance(null).revealAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_iii));
             }
             if (points > 900000) {
                 MyGoogleApi.getInstance(null).setAchievement(getResources().getString(R.string.achievement_its_over_nine_9000_iii));
             }
         }
-
-        Log.d(TAG, "onConnected: submited");
-//        signIn.setText(R.string.signout);
         signIn.setVisibility(View.INVISIBLE);
         leaderboards.setVisibility(View.VISIBLE);
         achievements.setVisibility(View.VISIBLE);
+        signOut.setVisibility(View.VISIBLE);
+        prefs.edit().putBoolean("LOGGED", true).apply();
     }
 
     @Override
