@@ -15,6 +15,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -25,9 +26,9 @@ import java.util.List;
 public class TDView extends SurfaceView implements
         Runnable{
 
-    public static int timesTouch;
     public static final double MAGIC_CONSTANT_Y = 1080.0; //si en mi movil de 1920/1080 va bien... hacemos proporcional con esta constante mágica!
     private static final double MAGIC_CONSTANT_X = 1920.0;
+    public static int timesTouch;
     volatile boolean playing;
     Thread gameThread = null;
     private boolean boosting = false;
@@ -94,6 +95,10 @@ public class TDView extends SurfaceView implements
 
     public int getTimesTouch() {
         return timesTouch;
+    }
+
+    public void setTimesTouch(int timesTouch) {
+        TDView.timesTouch = timesTouch;
     }
 
     public void startGame() {
@@ -166,6 +171,7 @@ public class TDView extends SurfaceView implements
     }
 
     private void update() {
+        long ini = System.nanoTime();
         if (!pauseUI) {
             boolean addEnemy = false;
 
@@ -194,7 +200,6 @@ public class TDView extends SurfaceView implements
                         }
                     }
                 }
-
                 if (shield.needToDraw()) {
                     shield.update();
                     if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
@@ -205,7 +210,6 @@ public class TDView extends SurfaceView implements
                         Shield.hitActions();
                     }
                 }
-
                 player.update();
                 for (final EnemyShip enemy : enemyCopies) {
                     enemy.update(player.getSpeed());
@@ -237,6 +241,8 @@ public class TDView extends SurfaceView implements
                         planet.startDraw();
                     }
                 }
+                Log.d("Rendimiento", "5: " + (System.nanoTime() - ini));
+
                 framesWithoutCrash++;
                 player.increaseFrameCount();
             }
@@ -427,9 +433,5 @@ public class TDView extends SurfaceView implements
 
     public void setUIPause() {
         pauseUI = true;
-    }
-
-    public void setTimesTouch(int timesTouch) {
-        TDView.timesTouch = timesTouch;
     }
 }

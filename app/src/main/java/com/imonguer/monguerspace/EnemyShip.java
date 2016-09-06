@@ -10,6 +10,8 @@ import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -19,6 +21,7 @@ import java.util.Random;
 public class EnemyShip {
     private static MediaPlayer mediaExplosions = null;
     private static Vibrator vibrator = null;
+    private static Map<Integer, Bitmap> resources = new HashMap<>();
     private Bitmap shownBitmap = null;
     private int x, y;
     private int speed = 1;
@@ -31,7 +34,6 @@ public class EnemyShip {
     private boolean surpassed;
     private Context context;
     private Random generator = new Random();
-
 
     public EnemyShip(Context context, int screenX, int screenY){
         setMediaExplosions(context);
@@ -53,114 +55,6 @@ public class EnemyShip {
         mediaExplosions.start();
         vibrator.vibrate(Constants.VIBRATION_TIME);
     }
-
-    private void setSpeed(int n) {
-        speed = generator.nextInt(n - 10) + 10;
-    }
-
-    private void setVibrator(Context context) {
-        if (vibrator == null) {
-            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-        }
-    }
-
-    private void setMediaExplosions(Context context) {
-        if (mediaExplosions == null) {
-            mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
-            mediaExplosions.setLooping(false);
-            mediaExplosions.setVolume(1, 1);
-        }
-    }
-
-    private void setBitmap() {
-        int whichBitmap = generator.nextInt(Ships.values().length);
-        Ships p = Ships.getShips(whichBitmap);
-        shownBitmap = BitmapFactory.decodeResource(context.getResources(), p.resource);
-        shownBitmap = scaleBitmap(shownBitmap, maxX / 20, maxY / 20);
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void update(int playerSpeed){
-
-        // Move to the left
-        x -= playerSpeed;
-        x -= speed;
-        //respawn when off screen
-        if (x < minX - shownBitmap.getWidth()) {
-            setSpeed(maxX / 100);
-            x = maxX;
-            y = generator.nextInt(maxY);
-            surpassed = true;
-            setBitmap();
-        }
-
-        hitBox = new Rect(x, y, x + shownBitmap.getWidth(), y + shownBitmap.getHeight());
-    }
-
-    public boolean isSurpassed() {
-        return surpassed;
-    }
-
-    public void setSurpassed(boolean surpassed) {
-        this.surpassed = surpassed;
-    }
-
-    public Rect getHitBox() { return hitBox; }
-
-    public void draw(Canvas canvas, Paint paint) {
-        canvas.drawBitmap(shownBitmap, x, y, paint);
-    }
-
-    private enum Ships {
-        A(0, R.drawable.asteroid), B(1, R.drawable.asteroid2), C(2, R.drawable.asteroid4);
-
-        int selector;
-        int resource;
-
-        Ships(int selector, int resource) {
-            this.selector = selector;
-            this.resource = resource;
-        }
-
-        public static Ships getShips(int selector) {
-            Ships ship = A;
-            for (final Ships s : Ships.values()) {
-                if (s.selector == selector) {
-                    ship = s;
-                }
-            }
-            return ship;
-        }
-    }
-
-    private Bitmap scaleBitmap(Bitmap bitmap, int targetW, int targetH) {
-        int scaleFactor = 1;
-        if ((targetW > 0) || (targetH > 0)) {
-            scaleFactor = Math.min(bitmap.getWidth() / targetW, bitmap.getHeight() / targetH);
-            scaleFactor = Math.max(scaleFactor, 1);
-        }
-        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / scaleFactor, bitmap.getHeight() / scaleFactor, false);
-        switch (generator.nextInt(4)) {
-            case 0:
-                bitmap = flip(bitmap, Direction.HORIZONTAL);
-                break;
-            case 1:
-                bitmap = flip(bitmap, Direction.VERTICAL);
-                break;
-            case 2:
-                bitmap = flip(bitmap, Direction.VERTICAL);
-                bitmap = flip(bitmap, Direction.HORIZONTAL);
-                break;
-            default:
-                break;
-        }
-        return bitmap;
-    }
-
-    public enum Direction {VERTICAL, HORIZONTAL}
 
     /**
      * Creates a new bitmap by flipping the specified bitmap
@@ -187,4 +81,115 @@ public class EnemyShip {
 
         return Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true);
     }
+
+    private void setSpeed(int n) {
+        speed = generator.nextInt(n - 10) + 10;
+    }
+
+    private void setVibrator(Context context) {
+        if (vibrator == null) {
+            vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+        }
+    }
+
+    private void setMediaExplosions(Context context) {
+        if (mediaExplosions == null) {
+            mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
+            mediaExplosions.setLooping(false);
+            mediaExplosions.setVolume(1, 1);
+        }
+    }
+
+    private void setBitmap() {
+        int whichBitmap = generator.nextInt(Ships.values().length);
+        Ships p = Ships.getShips(whichBitmap);
+        if (resources.get(p.resource) == null) {
+            shownBitmap = BitmapFactory.decodeResource(context.getResources(), p.resource);
+            resources.put(p.resource, shownBitmap);
+        } else {
+            shownBitmap = resources.get(p.resource);
+        }
+        shownBitmap = scaleBitmap(shownBitmap, maxX / 20, maxY / 20);
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void update(int playerSpeed){
+        // Move to the left
+        x -= playerSpeed + speed;
+        //respawn when off screen
+        if (x - shownBitmap.getWidth() < 0) {
+            setSpeed(maxX / 100);
+            x = maxX;
+            y = generator.nextInt(maxY);
+            surpassed = true;
+            setBitmap();
+        }
+
+        hitBox.set(x, y, x + shownBitmap.getWidth(), y + shownBitmap.getHeight());
+    }
+
+    public boolean isSurpassed() {
+        return surpassed;
+    }
+
+    public void setSurpassed(boolean surpassed) {
+        this.surpassed = surpassed;
+    }
+
+    public Rect getHitBox() { return hitBox; }
+
+    public void draw(Canvas canvas, Paint paint) {
+        canvas.drawBitmap(shownBitmap, x, y, paint);
+    }
+
+    private Bitmap scaleBitmap(Bitmap bitmap, int targetW, int targetH) {
+        int scaleFactor = 1;
+        if ((targetW > 0) || (targetH > 0)) {
+            scaleFactor = Math.min(bitmap.getWidth() / targetW, bitmap.getHeight() / targetH);
+            scaleFactor = Math.max(scaleFactor, 1);
+        }
+        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / scaleFactor, bitmap.getHeight() / scaleFactor, false);
+        switch (generator.nextInt(4)) {
+            case 0:
+                bitmap = flip(bitmap, Direction.HORIZONTAL);
+                break;
+            case 1:
+                bitmap = flip(bitmap, Direction.VERTICAL);
+                break;
+            case 2:
+                bitmap = flip(bitmap, Direction.VERTICAL);
+                bitmap = flip(bitmap, Direction.HORIZONTAL);
+                break;
+            default:
+                break;
+        }
+        return bitmap;
+    }
+
+    private enum Ships {
+        A(0, R.drawable.asteroid), B(1, R.drawable.asteroid2), C(2, R.drawable.asteroid4);
+
+        int selector;
+        int resource;
+
+        Ships(int selector, int resource) {
+            this.selector = selector;
+            this.resource = resource;
+        }
+
+        public static Ships getShips(int selector) {
+            Ships ship = A;
+            for (final Ships s : Ships.values()) {
+                if (s.selector == selector) {
+                    ship = s;
+                }
+            }
+            return ship;
+        }
+    }
+
+    public enum Direction {VERTICAL, HORIZONTAL}
 }
