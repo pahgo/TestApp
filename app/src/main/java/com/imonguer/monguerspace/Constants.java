@@ -10,4 +10,5 @@ public class Constants {
     public static final boolean DEBUG_ENABLED = false;
     public static final boolean ALPHA_MODE = false;
     public static final long INVULNERABLE_TIME = 3000;
+
 }

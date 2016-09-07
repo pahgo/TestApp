@@ -79,7 +79,6 @@ public class TDView extends SurfaceView implements
                 mediaPlayer.start();
             }
         });
-
         prefs = context.getSharedPreferences("HiScores",
                 Context.MODE_PRIVATE);
         editor = prefs.edit();

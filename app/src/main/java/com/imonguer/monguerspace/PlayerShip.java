@@ -27,6 +27,7 @@ public class PlayerShip {
     private long frameCount;
     private int frame;
 
+
     public PlayerShip(Context context, int maxX, int maxY) {
         MAX_SPEED = (int) ((26 / 1080.0) * maxY);
         GRAVITY = (int) ((-12 / 1080.0) * maxY);

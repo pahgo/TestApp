@@ -22,10 +22,8 @@ public class EnemyShip {
     private Bitmap shownBitmap = null;
     private int x, y;
     private int speed = 1;
-    // Detect enemies leaving the screen
     private int maxX;
     private int minX;
-    // Spawn enemies within screen bounds
     private int maxY;
     private Rect hitBox;
     private boolean surpassed;
