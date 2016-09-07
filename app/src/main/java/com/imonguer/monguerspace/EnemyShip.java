@@ -16,22 +16,20 @@ import java.util.Random;
  * Created by Usuario on 23/07/2016.
  *
  */
-public class EnemyShip {
+public class EnemyShip extends GameObject {
     private static MediaPlayer mediaExplosions = null;
     private static Vibrator vibrator = null;
     private Bitmap shownBitmap = null;
-    private int x, y;
     private int speed = 1;
     private int maxX;
     private int minX;
     private int maxY;
     private Rect hitBox;
     private boolean surpassed;
-    protected Context context;
-    private Random generator = new Random();
-
+    private Context context;
 
     public EnemyShip(Context context, int screenX, int screenY){
+        super();
         setMediaExplosions(context);
         setVibrator(context);
         this.context = context;
@@ -41,8 +39,8 @@ public class EnemyShip {
         maxY = screenY;
         setBitmap();
         maxY = screenY - shownBitmap.getHeight();
-        x = screenX + generator.nextInt(500);
-        y = generator.nextInt(maxY);
+        x = screenX + random(500);
+        y = random(maxY);
         hitBox = new Rect(x, y, shownBitmap.getWidth(), shownBitmap.getHeight());
         surpassed = false;
     }
@@ -54,9 +52,9 @@ public class EnemyShip {
 
     private void setSpeed(int n) {
         if (n < 10) {
-            speed = generator.nextInt(n - 6) + 10;
+            speed = random(n - 6) + 10;
         } else {
-            speed = generator.nextInt(n - 10) + 10;
+            speed = random(n - 10) + 10;
         }
     }
 
@@ -75,13 +73,9 @@ public class EnemyShip {
     }
 
     private void setBitmap() {
-        int whichBitmap = generator.nextInt(Ships.values().length);
+        int whichBitmap = random(Ships.values().length);
         Ships p = Ships.getShips(whichBitmap);
         shownBitmap = p.getBitmap(context, maxX, maxY);
-    }
-
-    public void setX(int x) {
-        this.x = x;
     }
 
     public void update(int playerSpeed){
@@ -93,7 +87,7 @@ public class EnemyShip {
         if (x < minX - shownBitmap.getWidth()) {
             setSpeed(maxX / 100);
             x = maxX;
-            y = generator.nextInt(maxY);
+            y = random(maxY);
             surpassed = true;
             setBitmap();
         }
@@ -113,10 +107,6 @@ public class EnemyShip {
 
     public void draw(Canvas canvas, Paint paint) {
         canvas.drawBitmap(shownBitmap, x, y, paint);
-    }
-
-    public int getX() {
-        return x;
     }
 
     private enum Ships {
@@ -146,7 +136,7 @@ public class EnemyShip {
 
         public Bitmap getBitmap(Context context, int maxX, int maxY) {
             Random generator = new Random();
-            int which = generator.nextInt(4);
+            int which = random(4);
 
             switch (which) {
                 // Normal
