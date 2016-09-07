@@ -29,7 +29,7 @@ public class EnemyShip {
     private int maxY;
     private Rect hitBox;
     private boolean surpassed;
-    private Context context;
+    protected Context context;
     private Random generator = new Random();
 
 
@@ -55,7 +55,11 @@ public class EnemyShip {
     }
 
     private void setSpeed(int n) {
-        speed = generator.nextInt(n - 10) + 10;
+        if (n < 10) {
+            speed = generator.nextInt(n - 6) + 10;
+        } else {
+            speed = generator.nextInt(n - 10) + 10;
+        }
     }
 
     private void setVibrator(Context context) {
@@ -75,8 +79,7 @@ public class EnemyShip {
     private void setBitmap() {
         int whichBitmap = generator.nextInt(Ships.values().length);
         Ships p = Ships.getShips(whichBitmap);
-        shownBitmap = BitmapFactory.decodeResource(context.getResources(), p.resource);
-        shownBitmap = scaleBitmap(shownBitmap, maxX / 20, maxY / 20);
+        shownBitmap = p.getBitmap(context, maxX, maxY);
     }
 
     public void setX(int x) {
@@ -114,11 +117,19 @@ public class EnemyShip {
         canvas.drawBitmap(shownBitmap, x, y, paint);
     }
 
+    public int getX() {
+        return x;
+    }
+
     private enum Ships {
         A(0, R.drawable.asteroid), B(1, R.drawable.asteroid2), C(2, R.drawable.asteroid4);
 
         int selector;
         int resource;
+        Bitmap normal;
+        Bitmap horizontal;
+        Bitmap vertical;
+        Bitmap horizontalAndVertical;
 
         Ships(int selector, int resource) {
             this.selector = selector;
@@ -134,31 +145,57 @@ public class EnemyShip {
             }
             return ship;
         }
+
+        public Bitmap getBitmap(Context context, int maxX, int maxY) {
+            Random generator = new Random();
+            int which = generator.nextInt(4);
+
+            switch (which) {
+                // Normal
+                case 0:
+                    if (normal == null) {
+                        normal = BitmapFactory.decodeResource(context.getResources(), resource);
+                        normal = scaleBitmap(normal, maxX / 20, maxY / 20);
+                    }
+                    return normal;
+                case 1:
+                    if (horizontal == null) {
+                        horizontal = BitmapFactory.decodeResource(context.getResources(), resource);
+                        horizontal = scaleBitmap(horizontal, maxX / 20, maxY / 20);
+                        horizontal = flip(horizontal, Direction.HORIZONTAL);
+                    }
+                    return horizontal;
+                case 2:
+                    if (vertical == null) {
+                        vertical = BitmapFactory.decodeResource(context.getResources(), resource);
+                        vertical = scaleBitmap(vertical, maxX / 20, maxY / 20);
+                        vertical = flip(vertical, Direction.VERTICAL);
+                    }
+                    return vertical;
+                case 3:
+                    if (horizontalAndVertical == null) {
+                        horizontalAndVertical = BitmapFactory.decodeResource(context.getResources(), resource);
+                        horizontalAndVertical = scaleBitmap(horizontalAndVertical, maxX / 20, maxY / 20);
+                        horizontalAndVertical = flip(horizontalAndVertical, Direction.VERTICAL);
+                        horizontalAndVertical = flip(horizontalAndVertical, Direction.HORIZONTAL);
+                    }
+                    return horizontalAndVertical;
+            }
+            // Never!
+            return null;
+        }
+
+        private Bitmap scaleBitmap(Bitmap bitmap, int targetW, int targetH) {
+            int scaleFactor = 1;
+            if ((targetW > 0) || (targetH > 0)) {
+                scaleFactor = Math.min(bitmap.getWidth() / targetW, bitmap.getHeight() / targetH);
+                scaleFactor = Math.max(scaleFactor, 1);
+            }
+            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / scaleFactor, bitmap.getHeight() / scaleFactor, false);
+            return bitmap;
+        }
     }
 
-    private Bitmap scaleBitmap(Bitmap bitmap, int targetW, int targetH) {
-        int scaleFactor = 1;
-        if ((targetW > 0) || (targetH > 0)) {
-            scaleFactor = Math.min(bitmap.getWidth() / targetW, bitmap.getHeight() / targetH);
-            scaleFactor = Math.max(scaleFactor, 1);
-        }
-        bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / scaleFactor, bitmap.getHeight() / scaleFactor, false);
-        switch (generator.nextInt(4)) {
-            case 0:
-                bitmap = flip(bitmap, Direction.HORIZONTAL);
-                break;
-            case 1:
-                bitmap = flip(bitmap, Direction.VERTICAL);
-                break;
-            case 2:
-                bitmap = flip(bitmap, Direction.VERTICAL);
-                bitmap = flip(bitmap, Direction.HORIZONTAL);
-                break;
-            default:
-                break;
-        }
-        return bitmap;
-    }
 
     public enum Direction {VERTICAL, HORIZONTAL}
 

@@ -13,6 +13,7 @@ public class MyGoogleApi {
     private static MyGoogleApi ourInstance;
     private GoogleApiClient mGoogleApiClient;
     private List<String> achievements = new ArrayList<>();
+    private List<String> achievementsShow = new ArrayList<>();
 
     private MyGoogleApi(GoogleApiClient mGoogleApiClient) {
         this.mGoogleApiClient = mGoogleApiClient;
@@ -42,7 +43,10 @@ public class MyGoogleApi {
 
     public void revealAchievement(String achievement) {
         if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            Games.Achievements.reveal(mGoogleApiClient, achievement);
+            if (!achievementsShow.contains(achievement)) {
+                Games.Achievements.reveal(mGoogleApiClient, achievement);
+                achievementsShow.add(achievement);
+            }
         }
     }
 }

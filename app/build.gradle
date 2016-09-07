@@ -18,8 +18,8 @@ android {
         applicationId "com.imonguer.monguerspace"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 10
-        versionName "1.3"
+        versionCode 12
+        versionName "1.1"
     }
     buildTypes {
         release {

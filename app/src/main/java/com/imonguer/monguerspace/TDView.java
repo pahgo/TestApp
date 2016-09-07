@@ -58,6 +58,7 @@ public class TDView extends SurfaceView implements
     private int framesWithoutCrash = 0;
     private Timer invulnerableTimer;
     private boolean pauseUI = false;
+    private int minDistanceToCheck;
 
     /*FIN - fferezsa - Corrección de FPS en dispositivos rápidos/lentos*/
     public TDView(Context context, int maxX, int maxY) {
@@ -103,6 +104,7 @@ public class TDView extends SurfaceView implements
         difficulty = 1;
         enemiesSurpassedTotal = 0;
         player = new PlayerShip(context, screenX, screenY);
+        minDistanceToCheck = player.getX() + player.getBitmap().getWidth() + 1;
         enemies.clear();
         dusts.clear();
 
@@ -145,6 +147,7 @@ public class TDView extends SurfaceView implements
         playing = false;
         mediaPlayer.pause();
         shield.pause();
+        invulnerableTimer.pause();
         if(gameThread != null) {
             try {
                 gameThread.join();
@@ -156,6 +159,7 @@ public class TDView extends SurfaceView implements
 
     public void resume() {
         if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            invulnerableTimer.resume();
             shield.resume();
             playing = true;
             mediaPlayer.start();
@@ -183,8 +187,9 @@ public class TDView extends SurfaceView implements
                 List<EnemyShip> enemyCopies = new ArrayList<>();
                 enemyCopies.addAll(enemies);
                 if (invulnerableTimer.isExpired()) {
+                    int i = 0;
                     for (final EnemyShip enemy : enemyCopies) {
-                        if (Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
+                        if (minDistanceToCheck >= enemy.getX() && Rect.intersects(player.getHitBox(), enemy.getHitBox())) {
                             enemy.setX(-200);
                             player.decreaseShield();
                             invulnerableTimer = new Timer(Constants.INVULNERABLE_TIME);
@@ -197,7 +202,7 @@ public class TDView extends SurfaceView implements
 
                 if (shield.needToDraw()) {
                     shield.update();
-                    if (Rect.intersects(player.getHitBox(), shield.getHitBox())) {
+                    if (minDistanceToCheck >= shield.getX() && Rect.intersects(player.getHitBox(), shield.getHitBox())) {
                         points += 2500;
                         shield.respawn();
                         shield.stopDraw();
