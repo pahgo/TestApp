@@ -1,4 +1,6 @@
-package com.imonguer.monguerspace;
+package com.imonguer.monguerspace.gameobjects;
+
+import android.content.Context;
 
 import java.util.Random;
 
@@ -8,15 +10,19 @@ import java.util.Random;
 public abstract class GameObject {
     public static final boolean GRAVITY_ON = true;
     public static final boolean GRAVITY_OFF = false;
-    private boolean affectedByGravity;
+    protected boolean affectedByGravity;
+    protected int gravityValue;
+    protected Context context;
     protected int x;
     protected int y;
     private static Random generator = new Random();
 
-    public GameObject() {
+    public GameObject(final Context context) {
         x = 0;
         y = 0;
+        this.context = context;
         affectedByGravity = GRAVITY_OFF;
+        gravityValue = 0;
     }
 
     public static int random(final int n) {

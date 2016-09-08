@@ -1,4 +1,4 @@
-package com.imonguer.monguerspace;
+package com.imonguer.monguerspace.gameobjects;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,19 +7,18 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import com.imonguer.monguerspace.R;
+
 /**
  * Created by Usuario on 23/07/2016.
  */
-public class PlayerShip {
+public class PlayerShip extends GameObject {
     private final int MAX_SPEED;
     private final int MIN_SPEED = 1;
-    private final int GRAVITY;
     private int maxY;
     private int minY;
     private Bitmap firstBitmap;
     private Bitmap secondBitmap;
-    private int x;
-    private int y;
     private int speed;
     private boolean boosting;
     private Rect hitBox;
@@ -29,8 +28,10 @@ public class PlayerShip {
 
 
     public PlayerShip(Context context, int maxX, int maxY) {
+        super(context);
         MAX_SPEED = (int) ((26 / 1080.0) * maxY);
-        GRAVITY = (int) ((-12 / 1080.0) * maxY);
+        affectedByGravity = GRAVITY_ON;
+        gravityValue = (int) ((-12 / 1080.0) * maxY);
         x = maxX / 7;
         y = maxY / 7;
         speed = 1;
@@ -83,8 +84,9 @@ public class PlayerShip {
         if (speed < MIN_SPEED) {
             speed = MIN_SPEED;
         }
-        // move the ship up or down
-        y -= speed + GRAVITY;
+        if (isAffectedByGravity()) {
+            y -= speed + gravityValue;
+        }
         // But don't let ship stray off screen
         if (y < minY) {
             y = minY;

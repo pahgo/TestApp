@@ -20,6 +20,9 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.imonguer.monguerspace.gameobjects.EnemyShip;
+import com.imonguer.monguerspace.gameobjects.PlayerShip;
+
 import java.util.ArrayList;
 import java.util.List;
 

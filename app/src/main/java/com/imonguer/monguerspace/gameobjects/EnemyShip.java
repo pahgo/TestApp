@@ -1,4 +1,4 @@
-package com.imonguer.monguerspace;
+package com.imonguer.monguerspace.gameobjects;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -9,6 +9,9 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.media.MediaPlayer;
 import android.os.Vibrator;
+
+import com.imonguer.monguerspace.Constants;
+import com.imonguer.monguerspace.R;
 
 import java.util.Random;
 
@@ -26,13 +29,11 @@ public class EnemyShip extends GameObject {
     private int maxY;
     private Rect hitBox;
     private boolean surpassed;
-    private Context context;
 
     public EnemyShip(Context context, int screenX, int screenY){
-        super();
-        setMediaExplosions(context);
-        setVibrator(context);
-        this.context = context;
+        super(context);
+        setMediaExplosions();
+        setVibrator();
         maxX = screenX;
         setSpeed(maxX / 100);
         minX = 0;
@@ -58,13 +59,13 @@ public class EnemyShip extends GameObject {
         }
     }
 
-    private void setVibrator(Context context) {
+    private void setVibrator() {
         if (vibrator == null) {
             vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         }
     }
 
-    private void setMediaExplosions(Context context) {
+    private void setMediaExplosions() {
         if (mediaExplosions == null) {
             mediaExplosions = MediaPlayer.create(context, R.raw.explosion2);
             mediaExplosions.setLooping(false);
